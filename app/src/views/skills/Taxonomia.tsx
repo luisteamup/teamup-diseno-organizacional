@@ -127,7 +127,7 @@ interface SvgProps {
   onLeave: () => void;
 }
 
-/** Mapa radial: centro "Operativo", 12 rayos de familia y abanicos de habilidades que se dibujan al entrar. */
+/** Mapa radial: centro "Industria de Retail", 12 rayos de familia y abanicos de habilidades que se dibujan al entrar. */
 function TaxonomySvg({ on, line, fam, onMove, onLeave }: SvgProps) {
   const any = line !== null || fam !== null;
   const font = 'Outfit, sans-serif';
@@ -165,8 +165,11 @@ function TaxonomySvg({ on, line, fam, onMove, onLeave }: SvgProps) {
         );
       })}
       <circle cx={CX} cy={CY} r={R0} style={{ fill: 'var(--tu-navy-600)', transform: on ? 'scale(1)' : 'scale(.6)', opacity: on ? 1 : 0, transformOrigin: CX + 'px ' + CY + 'px', transition: `transform 520ms ${OUT}, opacity 320ms` }} />
-      <text x={CX} y={CY + 2} textAnchor="middle" style={{ fontFamily: font, fontSize: 24, fontWeight: 700, fill: '#fff', letterSpacing: '-.02em', opacity: on ? 1 : 0, transition: 'opacity 400ms 200ms' }}>Operativo</text>
-      <text x={CX} y={CY + 24} textAnchor="middle" style={{ fontFamily: font, fontSize: 11, fontWeight: 600, fill: 'var(--tu-navy-100)', letterSpacing: '.1em', opacity: on ? 1 : 0, transition: 'opacity 400ms 260ms' }}>{TAX_LINES.length + ' SKILLS'}</text>
+      <text x={CX} y={CY - 12} textAnchor="middle" style={{ fontFamily: font, fontSize: 20, fontWeight: 700, fill: '#fff', letterSpacing: '-.02em', opacity: on ? 1 : 0, transition: 'opacity 400ms 200ms' }}>
+        <tspan x={CX}>Industria</tspan>
+        <tspan x={CX} dy={22}>de Retail</tspan>
+      </text>
+      <text x={CX} y={CY + 30} textAnchor="middle" style={{ fontFamily: font, fontSize: 11, fontWeight: 600, fill: 'var(--tu-navy-100)', letterSpacing: '.1em', opacity: on ? 1 : 0, transition: 'opacity 400ms 260ms' }}>{TAX_LINES.length + ' SKILLS'}</text>
     </svg>
   );
 }
