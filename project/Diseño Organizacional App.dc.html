@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/tokens/radius.css">
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/tokens/elevation.css">
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/tokens/base.css">
+  <link rel="stylesheet" href="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/styles.css">
+  <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js"></script>
+  <script src="_ds/teamup-design-system-ce2fab11-2580-4dcc-b18a-56b4a6ad5262/_ds_bundle.js"></script>
+  <style>
+    body{margin:0;background:#F6F8FB;font-family:'Outfit',sans-serif;}
+    a{color:var(--tu-cyan-600);text-decoration:none;}
+    a:hover{color:var(--tu-navy-600);}
+  </style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;background:var(--tu-grey-50);font-family:'Outfit',sans-serif;color:var(--tu-grey-700)">
+
+  <aside style="width:248px;flex:0 0 auto;background:#fff;border-right:1px solid var(--tu-grey-200);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;box-sizing:border-box">
+    <div style="padding:20px 20px 16px">
+      <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Logo" variant="dark" height="{{ 24 }}" hint-size="110px,24px"></x-import>
+    </div>
+    <div style="margin:0 12px 16px;padding:12px;border:1px solid var(--tu-grey-200);border-radius:12px;display:flex;align-items:center;gap:10px">
+      <span style="width:36px;height:36px;flex:0 0 auto;border-radius:999px;background:var(--tu-navy-600);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;letter-spacing:.02em">AE</span>
+      <div style="min-width:0;display:flex;flex-direction:column;gap:1px">
+        <span style="font-size:14px;font-weight:700;color:var(--tu-navy-600);line-height:1.25">Ahorramart Economax</span>
+        <span style="font-size:12px;color:var(--tu-grey-500)">Nogales, Sonora</span>
+      </div>
+    </div>
+    <div style="padding:0 12px 6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tu-grey-400)">Diseño organizacional</div>
+    <nav style="position:relative;padding:0 12px;display:flex;flex-direction:column;gap:2px">
+      <div style="position:absolute;left:12px;right:12px;height:40px;top:{{ navTop }};background:var(--tu-navy-50);border-radius:8px;transition:top 260ms cubic-bezier(.16,1,.3,1)"></div>
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3">
+        <button onClick="{{ n.go }}" style="position:relative;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-family:inherit;font-size:14px;text-align:left;color:{{ n.color }};font-weight:{{ n.fw }};transition:color 140ms cubic-bezier(.4,0,.2,1)" style-hover="color:var(--tu-navy-600)">
+          <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Icon" name="{{ n.icon }}" size="{{ 18 }}" hint-size="18px,18px"></x-import>
+          <span>{{ n.label }}</span>
+        </button>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;padding:16px">
+      <div style="border:1px solid var(--tu-grey-200);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+          <span style="font-size:13px;font-weight:600;color:var(--tu-navy-600);white-space:nowrap">Fase 2 de 4</span>
+          <span style="font-size:12px;color:var(--tu-grey-500)">{{ phasePct }}</span>
+        </div>
+        <span style="font-size:12px;color:var(--tu-grey-600);margin-top:-6px">Diagnóstico</span>
+        <div style="height:6px;border-radius:999px;background:var(--tu-grey-100);overflow:hidden">
+          <div style="height:100%;border-radius:999px;background:var(--tu-cyan);width:{{ phaseW }};transition:width 1100ms cubic-bezier(.16,1,.3,1)"></div>
+        </div>
+        <span style="font-size:12px;color:var(--tu-grey-500);line-height:1.5">Entrega de propuesta: 28 nov 2026</span>
+      </div>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="position:sticky;top:0;z-index:20;height:64px;box-sizing:border-box;background:rgba(255,255,255,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--tu-grey-200);padding:0 28px;display:flex;align-items:center;gap:12px">
+      <div style="display:flex;flex-direction:column;min-width:0;flex:0 1 auto">
+        <span style="font-size:12px;color:var(--tu-grey-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Ahorramart Economax / Diseño organizacional</span>
+        <span style="font-size:18px;font-weight:700;color:var(--tu-navy-600);letter-spacing:-.018em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ title }}</span>
+      </div>
+      <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Badge" tone="warning" size="sm" hint-size="96px,22px">Datos simulados</x-import>
+      <div style="flex:1"></div>
+      <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Button" variant="secondary" size="sm" icon="download" onClick="{{ exportPdf }}" hint-size="100px,32px">Exportar</x-import>
+      <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Button" variant="ai" size="sm" icon="sparkles" onClick="{{ openProposal }}" hint-size="130px,32px">Ver propuesta</x-import>
+    </header>
+
+    <main style="flex:1;padding:28px;box-sizing:border-box;width:100%;max-width:1280px">
+
+      <sc-if value="{{ isResumen }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;flex-direction:column;gap:6px;opacity:{{ hero.o }};transform:{{ hero.t }};transition:opacity 480ms cubic-bezier(.16,1,.3,1),transform 480ms cubic-bezier(.16,1,.3,1)">
+            <h1 style="margin:0;font-size:32px;line-height:1.15;letter-spacing:-.03em;font-weight:400;color:var(--tu-navy-600);text-wrap:pretty">Una estructura que creció <strong style="font-weight:800;color:var(--tu-cyan)">tienda por tienda</strong>, no por diseño.</h1>
+            <p style="margin:0;font-size:15px;line-height:1.65;color:var(--tu-grey-600);max-width:720px">Diagnóstico con datos de nómina y entrevistas en 6 sucursales y CEDIS. Corte: septiembre 2026.</p>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px">
+            <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+              <div style="background:#fff;border:1px solid var(--tu-grey-200);border-radius:12px;box-shadow:var(--shadow-sm);padding:20px;display:flex;flex-direction:column;gap:4px;opacity:{{ k.o }};transform:{{ k.t }};transition:opacity 480ms cubic-bezier(.16,1,.3,1),transform 480ms cubic-bezier(.16,1,.3,1);transition-delay:{{ k.d }}">
+                <span style="font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1.05;color:var(--tu-navy-600);font-variant-numeric:tabular-nums">{{ k.value }}</span>
+                <span style="font-size:14px;color:var(--tu-grey-700)">{{ k.label }}</span>
+                <span style="margin-top:8px;padding-top:10px;border-top:1px solid var(--tu-grey-100);font-size:12px;color:{{ k.noteColor }}">{{ k.note }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px">
+            <div style="background:#fff;border:1px solid var(--tu-grey-200);border-radius:12px;box-shadow:var(--shadow-sm);padding:20px;display:flex;flex-direction:column;gap:16px;opacity:{{ c1.o }};transform:{{ c1.t }};transition:opacity 480ms cubic-bezier(.16,1,.3,1),transform 480ms cubic-bezier(.16,1,.3,1);transition-delay:{{ c1.d }}">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+                <span style="font-size:16px;font-weight:700;color:var(--tu-navy-600);letter-spacing:-.018em">Plantilla por área</span>
+                <span style="font-size:12px;color:var(--tu-grey-500)">412 colaboradores</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ areas }}" as="a" hint-placeholder-count="9">
+                  <div style="display:grid;grid-template-columns:132px minmax(0,1fr) 36px;align-items:center;gap:12px">
+                    <span style="font-size:13px;color:var(--tu-grey-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.label }}</span>
+                    <div style="height:10px;border-radius:999px;background:var(--tu-grey-100);overflow:hidden">
+                      <div style="height:100%;border-radius:999px;background:{{ a.color }};width:{{ a.w }};transition:width 900ms cubic-bezier(.16,1,.3,1);transition-delay:{{ a.d }}"></div>
+                    </div>
+                    <span style="font-size:13px;font-weight:600;color:var(--tu-navy-600);text-align:right;font-variant-numeric:tabular-nums">{{ a.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#fff;border:1px solid var(--tu-violet-100);border-radius:12px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;overflow:hidden;opacity:{{ c2.o }};transform:{{ c2.t }};transition:opacity 480ms cubic-bezier(.16,1,.3,1),transform 480ms cubic-bezier(.16,1,.3,1);transition-delay:{{ c2.d }}">
+              <div style="padding:16px 20px;background:var(--tu-violet-50);border-bottom:1px solid var(--tu-violet-100);display:flex;align-items:center;gap:8px;color:var(--tu-violet-600)">
+                <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Icon" name="sparkles" size="{{ 18 }}" hint-size="18px,18px"></x-import>
+                <span style="font-size:16px;font-weight:700;letter-spacing:-.018em">Deep Insights</span>
+                <span style="flex:1"></span>
+                <span style="font-size:12px;color:var(--tu-grey-600)">3 patrones detectados</span>
+              </div>
+              <sc-for list="{{ insights }}" as="f" hint-placeholder-count="3">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--tu-grey-100);display:flex;flex-direction:column;gap:6px;opacity:{{ f.o }};transform:{{ f.t }};transition:opacity 420ms cubic-bezier(.16,1,.3,1),transform 420ms cubic-bezier(.16,1,.3,1);transition-delay:{{ f.d }}">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Badge" tone="{{ f.tone }}" size="sm" hint-size="60px,22px">{{ f.sev }}</x-import>
+                    <span style="font-size:15px;font-weight:700;color:var(--tu-navy-600)">{{ f.title }}</span>
+                  </div>
+                  <p style="margin:0;font-size:14px;line-height:1.6;color:var(--tu-grey-600);text-wrap:pretty">{{ f.text }}</p>
+                  <button onClick="{{ f.go }}" style="align-self:flex-start;border:none;background:none;padding:0;font-family:inherit;font-size:13px;font-weight:600;color:var(--tu-cyan-600);cursor:pointer;transition:color 140ms" style-hover="color:var(--tu-navy-600)">{{ f.cta }}</button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid var(--tu-grey-200);border-radius:12px;box-shadow:var(--shadow-sm);padding:20px;display:flex;flex-direction:column;gap:14px;opacity:{{ c3.o }};transform:{{ c3.t }};transition:opacity 480ms cubic-bezier(.16,1,.3,1),transform 480ms cubic-bezier(.16,1,.3,1);transition-delay:{{ c3.d }}">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+              <span style="font-size:16px;font-weight:700;color:var(--tu-navy-600);letter-spacing:-.018em">Rotación anual por sucursal</span>
+              <span style="font-size:12px;color:var(--tu-grey-500)">Referencia del proyecto: 30%</span>
+            </div>
+            <div style="overflow-x:auto;overflow-y:hidden">
+              <div style="min-width:560px;display:flex;flex-direction:column">
+                <div style="display:grid;grid-template-columns:minmax(140px,1fr) 100px minmax(200px,2fr) 56px;gap:16px;padding:0 0 8px;border-bottom:1px solid var(--tu-grey-200);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tu-grey-500)">
+                  <span>Sucursal</span><span>Plantilla</span><span>Rotación</span><span style="text-align:right">%</span>
+                </div>
+                <sc-for list="{{ stores }}" as="s" hint-placeholder-count="6">
+                  <div style="display:grid;grid-template-columns:minmax(140px,1fr) 100px minmax(200px,2fr) 56px;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--tu-grey-100);font-size:14px;transition:background 140ms" style-hover="background:var(--tu-grey-25)">
+                    <span style="font-weight:600;color:var(--tu-navy-600)">{{ s.name }}</span>
+                    <span style="font-variant-numeric:tabular-nums">{{ s.hc }}</span>
+                    <div style="position:relative;height:8px;border-radius:999px;background:var(--tu-grey-100)">
+                      <div style="height:100%;border-radius:999px;background:{{ s.color }};width:{{ s.w }};transition:width 900ms cubic-bezier(.16,1,.3,1);transition-delay:{{ s.d }}"></div>
+                      <div style="position:absolute;top:-4px;bottom:-4px;left:30%;width:2px;background:var(--tu-navy-600);border-radius:1px"></div>
+                    </div>
+                    <span style="text-align:right;font-weight:700;font-variant-numeric:tabular-nums;color:{{ s.textColor }}">{{ s.pctLabel }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isOrg }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+            <div style="display:flex;padding:4px;gap:4px;background:#fff;border:1px solid var(--tu-grey-200);border-radius:10px;position:relative">
+              <div style="position:absolute;top:4px;bottom:4px;width:120px;left:{{ segLeft }};background:var(--tu-navy-600);border-radius:8px;transition:left 260ms cubic-bezier(.16,1,.3,1)"></div>
+              <button onClick="{{ setActual }}" style="position:relative;width:120px;height:32px;border:none;background:transparent;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;color:{{ segActualColor }};transition:color 220ms">Actual</button>
+              <button onClick="{{ setProp }}" style="position:relative;width:120px;height:32px;border:none;background:transparent;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;color:{{ segPropColor }};transition:color 220ms">Propuesta</button>
+            </div>
+            <span style="font-size:14px;color:var(--tu-grey-600)">{{ orgCaption }}</span>
+          </div>
+
+          <sc-if value="{{ isProp }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+              <sc-for list="{{ propStats }}" as="ps" hint-placeholder-count="3">
+                <div style="border:2px solid var(--tu-navy-600);border-radius:20px;padding:14px 18px;display:flex;align-items:baseline;gap:12px;opacity:{{ ps.o }};transform:{{ ps.t }};transition:opacity 420ms cubic-bezier(.16,1,.3,1),transform 420ms cubic-bezier(.16,1,.3,1);transition-delay:{{ ps.d }}">
+                  <span style="font-size:26px;font-weight:800;letter-spacing:-.03em;color:var(--tu-blue);white-space:nowrap">{{ ps.v }}</span>
+                  <span style="font-size:14px;line-height:1.35;color:var(--tu-grey-700)">{{ ps.l }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+            <div style="flex:1 1 560px;min-width:0;background:#fff;border:1px solid var(--tu-grey-200);border-radius:16px;box-shadow:var(--shadow-sm);padding:28px 20px;display:flex;flex-direction:column;align-items:stretch;gap:0">
+              <div style="display:flex;justify-content:center;opacity:{{ rootR.o }};transform:{{ rootR.t }};transition:opacity 420ms cubic-bezier(.16,1,.3,1),transform 420ms cubic-bezier(.16,1,.3,1)">
+                <button onClick="{{ selRoot }}" style="width:240px;padding:14px 16px;border-radius:12px;border:1px solid var(--tu-grey-200);background:var(--tu-navy-600);color:#fff;font-family:inherit;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;box-shadow:{{ rootRing }};transition:box-shadow 220ms cubic-bezier(.4,0,.2,1),transform 220ms cubic-bezier(.4,0,.2,1)" style-hover="transform:translateY(-3px)">
+                  <span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tu-cyan-200)">N1 · 412 personas</span>
+                  <span style="font-size:15px;font-weight:700">Gerencia general</span>
+                  <span style="font-size:13px;color:var(--tu-navy-100)">Rogelio Ibarra</span>
+                </button>
+              </div>
+              <div style="align-self:center;width:2px;height:24px;background:var(--tu-grey-300)"></div>
+              <div style="overflow-x:auto;overflow-y:hidden;padding:4px 4px 8px;margin:-4px -4px 0">
+                <div style="position:relative;min-width:{{ l2Min }};padding-top:20px">
+                  <div style="position:absolute;top:0;height:2px;background:var(--tu-grey-300);left:{{ l2Inset }};right:{{ l2Inset }}"></div>
+                  <div style="display:grid;grid-template-columns:{{ l2Cols }};gap:10px">
+                    <sc-for list="{{ l2 }}" as="m" hint-placeholder-count="7">
+                      <div style="position:relative;opacity:{{ m.o }};transform:{{ m.t }};transition:opacity 420ms cubic-bezier(.16,1,.3,1),transform 420ms cubic-bezier(.16,1,.3,1);transition-delay:{{ m.d }}">
+                        <div style="position:absolute;top:-20px;left:50%;width:2px;height:20px;margin-left:-1px;background:var(--tu-grey-300)"></div>
+                        <button onClick="{{ m.pick }}" style="width:100%;min-height:118px;box-sizing:border-box;padding:12px;border-radius:12px;border:1px solid var(--tu-grey-200);background:{{ m.bg }};box-shadow:{{ m.ring }};font-family:inherit;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:box-shadow 220ms cubic-bezier(.4,0,.2,1),background 220ms,transform 220ms cubic-bezier(.4,0,.2,1)" style-hover="transform:translateY(-3px)">
+                          <span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tu-grey-500)">{{ m.meta }}</span>
+                          <span style="font-size:14px;font-weight:700;line-height:1.25;color:var(--tu-navy-600)">{{ m.title }}</span>
+                          <span style="font-size:12px;color:var(--tu-grey-600)">{{ m.name }}</span>
+                          <sc-if value="{{ m.hasTag }}" hint-placeholder-val="{{ false }}">
+                            <span style="margin-top:auto;padding-top:6px;display:flex">
+                              <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Badge" tone="{{ m.tagTone }}" size="sm" hint-size="70px,22px">{{ m.tag }}</x-import>
+                            </span>
+                          </sc-if>
+                        </button>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+
+              <sc-if value="{{ hasL3 }}" hint-placeholder-val="{{ true }}">
+                <div style="margin-top:20px;padding:16px;border-radius:12px;background:var(--tu-grey-50);display:flex;flex-direction:column;gap:12px">
+                  <span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tu-grey-500)">{{ l3Label }}</span>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">
+                    <sc-for list="{{ l3 }}" as="c" hint-placeholder-count="6">
+                      <div style="background:#fff;border:1px solid var(--tu-grey-200);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px;opacity:{{ c.o }};transform:{{ c.t }};transition:opacity 380ms cubic-bezier(.16,1,.3,1),transform 380ms cubic-bezier(.16,1,.3,1);transition-delay:{{ c.d }}">
+                        <span style="font-size:13px;font-weight:600;color:var(--tu-navy-600);line-height:1.3">{{ c.title }}</span>
+                        <span style="font-size:12px;color:var(--tu-grey-500)">{{ c.hcLabel }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="flex:1 1 280px;max-width:380px;background:#fff;border:1px solid var(--tu-grey-200);border-radius:16px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;overflow:hidden;position:sticky;top:88px;opacity:{{ panelR.o }};transform:{{ panelR.t }};transition:opacity 380ms cubic-bezier(.16,1,.3,1),transform 380ms cubic-bezier(.16,1,.3,1)">
+              <div style="padding:20px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--tu-grey-100)">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tu-grey-500)">{{ pn.level }}</span>
+                <span style="font-size:20px;font-weight:700;letter-spacing:-.018em;line-height:1.2;color:var(--tu-navy-600)">{{ pn.title }}</span>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="width:32px;height:32px;border-radius:999px;background:var(--tu-grey-100);color:var(--tu-grey-600);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ pn.initials }}</span>
+                  <span style="font-size:14px;color:var(--tu-grey-700)">{{ pn.name }}</span>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--tu-grey-100)">
+                <div style="padding:16px 20px;border-right:1px solid var(--tu-grey-100);display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:28px;font-weight:800;letter-spacing:-.03em;color:var(--tu-navy-600);font-variant-numeric:tabular-nums">{{ pn.hc }}</span>
+                  <span style="font-size:13px;color:var(--tu-grey-600)">Personas en su estructura</span>
+                </div>
+                <div style="padding:16px 20px;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:28px;font-weight:800;letter-spacing:-.03em;color:var(--tu-navy-600);font-variant-numeric:tabular-nums">{{ pn.direct }}</span>
+                  <span style="font-size:13px;color:var(--tu-grey-600)">Reportes directos</span>
+                </div>
+              </div>
+              <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tu-grey-500)">Distribución de plantilla</span>
+                <sc-for list="{{ pnList }}" as="r" hint-placeholder-count="5">
+                  <div style="display:flex;flex-direction:column;gap:4px">
+                    <div style="display:flex;justify-content:space-between;gap:8px;font-size:13px">
+                      <span style="color:var(--tu-grey-700)">{{ r.title }}</span>
+                      <span style="font-weight:600;color:var(--tu-navy-600);font-variant-numeric:tabular-nums">{{ r.hc }}</span>
+                    </div>
+                    <div style="height:6px;border-radius:999px;background:var(--tu-grey-100);overflow:hidden">
+                      <div style="height:100%;border-radius:999px;background:var(--tu-cyan);width:{{ r.w }};transition:width 700ms cubic-bezier(.16,1,.3,1);transition-delay:{{ r.d }}"></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isPuestos }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="5">
+              <button onClick="{{ ch.pick }}" style="white-space:nowrap;flex:0 0 auto;height:32px;padding:0 14px;border-radius:999px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;border:1px solid {{ ch.border }};background:{{ ch.bg }};color:{{ ch.color }};transition:background 140ms cubic-bezier(.4,0,.2,1),color 140ms,border-color 140ms">
+                <span>{{ ch.label }}</span>
+                <span style="font-weight:500;color:{{ ch.countColor }}">{{ ch.count }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <div style="background:#fff;border:1px solid var(--tu-grey-200);border-radius:12px;box-shadow:var(--shadow-sm);overflow-x:auto;overflow-y:hidden">
+            <div style="min-width:860px">
+              <div style="display:grid;grid-template-columns:minmax(200px,2fr) minmax(130px,1.2fr) 64px 96px minmax(150px,1.3fr) 120px;gap:16px;padding:12px 20px;border-bottom:1px solid var(--tu-grey-200);background:var(--tu-grey-25);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tu-grey-500)">
+                <span>Puesto</span><span>Área</span><span>Nivel</span><span>Ocupantes</span><span>Banda mensual (MXN)</span><span>Descripción</span>
+              </div>
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10">
+                <div style="display:grid;grid-template-columns:minmax(200px,2fr) minmax(130px,1.2fr) 64px 96px minmax(150px,1.3fr) 120px;gap:16px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--tu-grey-100);font-size:14px;opacity:{{ r.o }};transform:{{ r.t }};transition:opacity 360ms cubic-bezier(.16,1,.3,1),transform 360ms cubic-bezier(.16,1,.3,1),background 140ms;transition-delay:{{ r.d }}" style-hover="background:var(--tu-grey-25)">
+                  <span style="font-weight:600;color:var(--tu-navy-600)">{{ r.role }}</span>
+                  <span style="color:var(--tu-grey-600)">{{ r.area }}</span>
+                  <span style="color:var(--tu-grey-600)">{{ r.level }}</span>
+                  <span style="font-variant-numeric:tabular-nums">{{ r.hc }}</span>
+                  <span style="font-variant-numeric:tabular-nums;color:var(--tu-grey-700)">{{ r.band }}</span>
+                  <span style="display:flex">
+                    <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Badge" tone="{{ r.tone }}" size="sm" hint-size="84px,22px">{{ r.status }}</x-import>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+
+  <div style="position:fixed;right:24px;bottom:24px;z-index:50;background:var(--tu-navy-600);color:#fff;border-radius:12px;box-shadow:var(--shadow-lg);padding:14px 18px;display:flex;align-items:center;gap:10px;font-size:14px;pointer-events:none;opacity:{{ toastO }};transform:{{ toastT }};transition:opacity 220ms cubic-bezier(.16,1,.3,1),transform 220ms cubic-bezier(.16,1,.3,1)">
+    <x-import component-from-global-scope="TeamUpDesignSystem_ce2fab.Icon" name="file-down" size="{{ 18 }}" hint-size="18px,18px"></x-import>
+    <span>Preparando el PDF del diagnóstico…</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;animate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;startView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;resumen&quot;,&quot;org&quot;,&quot;puestos&quot;],&quot;default&quot;:&quot;resumen&quot;,&quot;tsType&quot;:&quot;'resumen'|'org'|'puestos'&quot;},&quot;orgVersion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;actual&quot;,&quot;propuesta&quot;],&quot;default&quot;:&quot;actual&quot;,&quot;tsType&quot;:&quot;'actual'|'propuesta'&quot;}}">
+const AREAS=[['Piso de venta',144],['Cajas',96],['Perecederos',64],['Almacén y CEDIS',52],['Administración',22],['Mantenimiento',14],['Compras',9],['Recursos Humanos',7],['Sistemas',4]];
+const STORES=[['Sucursal Centro',64,38],['Sucursal Kennedy',58,52],['Sucursal Colosio',56,61],['Sucursal Obregón',55,44],['Sucursal Los Álamos',54,41],['Sucursal Mascareñas',52,49]];
+const ORG={
+  actual:{l2:[
+    {id:'ops',title:'Gerencia de operaciones',name:'Marisol Quintero',level:'N2',hc:340,children:[['Sucursal Centro',64],['Sucursal Kennedy',58],['Sucursal Colosio',56],['Sucursal Obregón',55],['Sucursal Los Álamos',54],['Sucursal Mascareñas',52]]},
+    {id:'adm',title:'Gerencia de administración y finanzas',name:'Héctor Valenzuela',level:'N2',hc:14,children:[['Contabilidad',6],['Nóminas',4],['Tesorería',3]]},
+    {id:'cedis',title:'Jefatura de almacén y CEDIS',name:'Ramón Esquer',level:'N3',hc:23,children:[['Surtido',10],['Recepción',8],['Tráfico',4]]},
+    {id:'mto',title:'Jefatura de mantenimiento',name:'Gilberto Soto',level:'N3',hc:14,children:[['Mantenimiento de tiendas',9],['Refrigeración',4]]},
+    {id:'com',title:'Jefatura de compras',name:'Arturo Félix',level:'N3',hc:9,children:[['Compras abarrotes',4],['Compras perecederos',4]]},
+    {id:'rh',title:'Jefatura de recursos humanos',name:'Lucía Moreno',level:'N3',hc:7,children:[['Reclutamiento',3],['Capacitación',2],['Relaciones laborales',1]]},
+    {id:'sis',title:'Coordinación de sistemas',name:'Daniela Ruiz',level:'N3',hc:4,children:[['Soporte',2],['Punto de venta',1]]}
+  ]},
+  propuesta:{l2:[
+    {id:'dop',title:'Dirección de operaciones',name:'Marisol Quintero',level:'N2',hc:379,tag:'Integrada',tagTone:'info',children:[['Gerencia zona norte',179],['Gerencia zona sur',162],['Almacén y CEDIS',23],['Mantenimiento',14]]},
+    {id:'daf',title:'Dirección de administración y finanzas',name:'Héctor Valenzuela',level:'N2',hc:23,tag:'Ampliada',tagTone:'info',children:[['Finanzas',9],['Compras',9],['Sistemas',4]]},
+    {id:'dch',title:'Dirección de capital humano',name:'Lucía Moreno',level:'N2',hc:11,tag:'Nueva',tagTone:'success',children:[['Nómina y compensaciones',4],['Atracción de talento',3],['Desarrollo y capacitación',2],['Relaciones laborales',1]]}
+  ]}
+};
+const ROWS=[
+  ['Auxiliar de piso de venta','Piso de venta','N5',118,'$8,600 – $9,900','En revisión'],
+  ['Cajero(a)','Cajas','N5',88,'$8,900 – $10,400','Validado'],
+  ['Carnicero(a)','Perecederos','N5',22,'$10,800 – $12,900','Validado'],
+  ['Panadero(a)','Perecederos','N5',18,'$10,200 – $12,100','En revisión'],
+  ['Supervisor(a) de turno','Piso de venta','N4',14,'$13,200 – $15,600','Duplicidad'],
+  ['Jefe(a) de piso','Piso de venta','N4',12,'$15,000 – $18,200','Duplicidad'],
+  ['Surtidor(a)','Almacén y CEDIS','N5',10,'$9,400 – $10,900','Validado'],
+  ['Auxiliar de recibo','Almacén y CEDIS','N5',8,'$9,200 – $10,600','Pendiente'],
+  ['Jefe(a) de cajas','Cajas','N4',6,'$14,500 – $17,800','Validado'],
+  ['Gerente de sucursal','Operaciones','N3',6,'$32,000 – $41,000','Validado'],
+  ['Técnico(a) de refrigeración','Mantenimiento','N5',4,'$13,800 – $16,500','Pendiente'],
+  ['Analista de nómina','Administración','N5',4,'$14,000 – $17,000','En revisión'],
+  ['Reclutador(a)','Recursos Humanos','N5',3,'$13,500 – $16,000','Validado']
+];
+const TONE={'Validado':'success','En revisión':'warning','Pendiente':'neutral','Duplicidad':'danger'};
+const FILTERS=['Todos','Validado','En revisión','Pendiente','Duplicidad'];
+const NAV=[{id:'resumen',label:'Resumen',icon:'layout-dashboard',title:'Diagnóstico organizacional'},{id:'org',label:'Organigrama',icon:'network',title:'Organigrama'},{id:'puestos',label:'Catálogo de puestos',icon:'briefcase',title:'Catálogo de puestos'}];
+const ease=t=>1-Math.pow(1-t,3);
+const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('');
+
+class Component extends DCLogic {
+  state = { view: this.props.startView ?? 'resumen', ver: this.props.orgVersion ?? 'actual', sel: null, filter: 'Todos', entered: false, sub: false, p: 0, toast: false };
+  componentDidMount(){ this.run(); }
+  componentWillUnmount(){ clearTimeout(this.t1); clearTimeout(this.t2); clearInterval(this.iv); clearTimeout(this.tt); }
+  componentDidUpdate(pp){
+    if(this.props.startView && pp.startView!==this.props.startView) this.go(this.props.startView);
+    if(this.props.orgVersion && pp.orgVersion!==this.props.orgVersion) this.setVer(this.props.orgVersion);
+    if(pp.animate!==this.props.animate) this.run();
+  }
+  anim(){ return this.props.animate ?? true; }
+  run(){
+    clearTimeout(this.t1); clearInterval(this.iv);
+    if(!this.anim() || document.hidden){ this.setState({entered:true,sub:true,p:1}); return; }
+    this.setState({entered:false,sub:false,p:0});
+    this.t1=setTimeout(()=>{
+      this.setState({entered:true,sub:true});
+      const t0=performance.now();
+      this.iv=setInterval(()=>{ const t=Math.min(1,(performance.now()-t0)/1200); this.setState({p:t}); if(t>=1) clearInterval(this.iv); },16);
+    },40);
+  }
+  runSub(){
+    clearTimeout(this.t2);
+    if(!this.anim() || document.hidden){ this.setState({sub:true}); return; }
+    this.setState({sub:false});
+    this.t2=setTimeout(()=>this.setState({sub:true}),40);
+  }
+  go(view,extra={}){ this.setState({view,...extra},()=>this.run()); }
+  setVer(ver){ if(ver===this.state.ver) return; this.setState({ver,sel:null},()=>this.run()); }
+  pick(sel){ if(sel===this.state.sel) return; this.setState({sel},()=>this.runSub()); }
+  rv(on,i=0,step=70,base=0){ return { o: on?1:0, t: on?'none':'translateY(12px)', d: (base+i*step)+'ms' }; }
+
+  renderVals(){
+    const s=this.state, on=s.entered, e=ease(s.p);
+    const navIdx=Math.max(0,NAV.findIndex(n=>n.id===s.view));
+    const nav=NAV.map(n=>({...n, color: n.id===s.view?'var(--tu-navy-600)':'var(--tu-grey-600)', fw: n.id===s.view?600:500, go:()=>this.go(n.id)}));
+
+    const kpis=[
+      {value:String(Math.round(412*e)),label:'Colaboradores activos',note:'6 sucursales, CEDIS y corporativo',noteColor:'var(--tu-grey-500)'},
+      {value:String(Math.round(6*e)),label:'Niveles jerárquicos',note:'De gerencia general a piso de venta',noteColor:'var(--tu-grey-500)'},
+      {value:'1:'+(4.8*e).toFixed(1),label:'Tramo de control promedio',note:'Referencia del proyecto: 1:8',noteColor:'var(--tu-warning)'},
+      {value:Math.round(47*e)+'%',label:'Rotación anual',note:'61% de las bajas ocurre antes de 90 días',noteColor:'var(--tu-danger)'}
+    ].map((k,i)=>({...k,...this.rv(on,i,70,80)}));
+
+    const maxA=AREAS[0][1];
+    const areas=AREAS.map(([label,v],i)=>({label,v,color:i===0?'var(--tu-navy-600)':'var(--tu-cyan)',w:on?(v/maxA*100)+'%':'0%',d:(300+i*60)+'ms'}));
+    const stores=STORES.map(([name,hc,pct],i)=>({name,hc,pctLabel:Math.round(pct*e)+'%',color:pct>=50?'var(--tu-danger)':'var(--tu-cyan)',textColor:pct>=50?'var(--tu-danger)':'var(--tu-navy-600)',w:on?pct+'%':'0%',d:(500+i*70)+'ms'}));
+    const insights=[
+      {sev:'Alta',tone:'danger',title:'Duplicidad de funciones en piso',text:'Jefe de piso y supervisor de turno comparten 70% de sus responsabilidades en 4 de 6 sucursales.',cta:'Ver puestos →',go:()=>this.go('puestos',{filter:'Duplicidad'})},
+      {sev:'Media',tone:'warning',title:'Siete reportes directos a gerencia general',text:'Operación, soporte y áreas corporativas escalan al mismo nivel. La gerencia general resuelve lo operativo.',cta:'Ver organigrama →',go:()=>this.go('org',{ver:'actual',sel:'gg'})},
+      {sev:'Media',tone:'warning',title:'Rotación concentrada en tienda',text:'Cajas y piso de venta suman 8 de cada 10 bajas. Kennedy y Colosio superan 50% anual.',cta:'Ver puestos →',go:()=>this.go('puestos',{filter:'Todos'})}
+    ].map((f,i)=>({...f,...this.rv(on,i,90,420)}));
+
+    const org=ORG[s.ver];
+    const sel=s.sel ?? org.l2[0].id;
+    const isRoot=sel==='gg';
+    const node=isRoot?{title:'Gerencia general',name:'Rogelio Ibarra',level:'N1',hc:412,children:org.l2.map(n=>[n.title,n.hc])}:(org.l2.find(n=>n.id===sel)||org.l2[0]);
+    const ring='0 0 0 2px var(--tu-navy-600), var(--shadow-md)';
+    const l2=org.l2.map((n,i)=>({...n,meta:n.level+' · '+n.hc+' personas',hasTag:!!n.tag,tag:n.tag||'',tagTone:n.tagTone||'neutral',bg:n.id===sel?'var(--tu-navy-50)':'#fff',ring:n.id===sel?ring:'none',pick:()=>this.pick(n.id),...this.rv(on,i,60,140)}));
+    const l3=isRoot?[]:node.children.map(([title,hc],i)=>({title,hcLabel:hc+(hc===1?' persona':' personas'),...this.rv(s.sub,i,50,on?0:400)}));
+    const maxC=Math.max(...node.children.map(c=>c[1]));
+    const pnList=node.children.map(([title,hc],i)=>({title,hc,w:s.sub?(hc/maxC*100)+'%':'0%',d:(i*50)+'ms'}));
+    const isProp=s.ver==='propuesta';
+    const propStats=[{v:'7 → 3',l:'Reportes directos a gerencia general'},{v:'+2',l:'Gerencias de zona para agrupar sucursales'},{v:'1',l:'Dirección nueva de capital humano'}].map((x,i)=>({...x,...this.rv(on,i,80,60)}));
+
+    const counts=Object.fromEntries(FILTERS.map(f=>[f,f==='Todos'?ROWS.length:ROWS.filter(r=>r[5]===f).length]));
+    const chips=FILTERS.map(f=>{const a=f===s.filter;return{label:f,count:counts[f],bg:a?'var(--tu-navy-600)':'#fff',color:a?'#fff':'var(--tu-grey-700)',countColor:a?'var(--tu-navy-100)':'var(--tu-grey-400)',border:a?'var(--tu-navy-600)':'var(--tu-grey-300)',pick:()=>{ if(f!==s.filter) this.setState({filter:f},()=>this.run()); }};});
+    const rows=ROWS.filter(r=>s.filter==='Todos'||r[5]===s.filter).map(([role,area,level,hc,band,status],i)=>({role,area,level,hc,band,status,tone:TONE[status],...this.rv(on,i,40,0)}));
+
+    return {
+      nav, navTop:(navIdx*42)+'px', title:NAV[navIdx].title,
+      phasePct:Math.round(50*e)+'%', phaseW:on?'50%':'0%',
+      isResumen:s.view==='resumen', isOrg:s.view==='org', isPuestos:s.view==='puestos',
+      hero:this.rv(on), kpis, areas, stores, insights, c1:this.rv(on,0,0,300), c2:this.rv(on,0,0,380), c3:this.rv(on,0,0,460),
+      isProp, propStats, segLeft:isProp?'128px':'4px', segActualColor:isProp?'var(--tu-grey-600)':'#fff', segPropColor:isProp?'#fff':'var(--tu-grey-600)',
+      orgCaption:isProp?'Tres direcciones y dos gerencias de zona. Selecciona un área para ver su equipo.':'Estructura vigente, septiembre 2026. Selecciona un área para ver su equipo.',
+      setActual:()=>this.setVer('actual'), setProp:()=>this.setVer('propuesta'),
+      rootR:this.rv(on), rootRing:isRoot?'0 0 0 3px var(--tu-cyan), var(--shadow-md)':'var(--shadow-sm)', selRoot:()=>this.pick('gg'),
+      l2, l2Cols:'repeat('+org.l2.length+', minmax(0,1fr))', l2Inset:(50/org.l2.length)+'%', l2Min:(org.l2.length*150)+'px',
+      hasL3:!isRoot, l3, l3Label:'Reportan a '+node.title.toLowerCase(),
+      panelR:this.rv(on,0,0,200),
+      pn:{title:node.title,name:node.name,initials:initials(node.name),level:node.level+(node.tag?' · '+node.tag:''),hc:node.hc,direct:node.children.length}, pnList,
+      chips, rows,
+      exportPdf:()=>{ clearTimeout(this.tt); this.setState({toast:true}); this.tt=setTimeout(()=>this.setState({toast:false}),2600); },
+      openProposal:()=>this.go('org',{ver:'propuesta',sel:null}),
+      toastO:s.toast?1:0, toastT:s.toast?'none':'translateY(12px)'
+    };
+  }
+}
+</script>
+</body>
+</html>

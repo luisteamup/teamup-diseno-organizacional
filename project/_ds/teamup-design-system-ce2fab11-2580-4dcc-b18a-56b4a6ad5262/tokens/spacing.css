@@ -1,0 +1,17 @@
+/* 4px base grid. Section rhythm on the marketing site is 96–112px. */
+:root{
+  --space-0:0px;--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;
+  --space-5:20px;--space-6:24px;--space-7:32px;--space-8:40px;--space-9:48px;
+  --space-10:56px;--space-11:64px;--space-12:80px;--space-13:96px;--space-14:112px;--space-15:144px;
+
+  --gutter-page:24px;
+  --container-max:1200px;
+  --container-narrow:760px;
+  --section-y:var(--space-14);
+  --section-y-compact:var(--space-12);
+  --card-padding:var(--space-6);
+  --card-padding-lg:var(--space-7);
+  --control-height-sm:32px;
+  --control-height:40px;
+  --control-height-lg:48px;
+}

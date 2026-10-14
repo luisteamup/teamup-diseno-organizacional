@@ -1,0 +1,25 @@
+/* Minimal element defaults so any page linking styles.css already looks like TeamUp. */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font-sans);font-size:var(--fs-base);font-weight:var(--fw-regular);line-height:var(--lh-relaxed);color:var(--text-body);background:var(--surface-page);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--font-display);color:var(--text-heading);font-weight:var(--fw-bold);line-height:var(--lh-heading);letter-spacing:var(--ls-tight);text-wrap:balance}
+h1{font-size:var(--text-h1-size);letter-spacing:var(--ls-tighter)}
+h2{font-size:var(--text-h2-size);letter-spacing:var(--ls-tighter)}
+h3{font-size:var(--text-h3-size)}
+p{margin:0;text-wrap:pretty}
+a{color:var(--text-link);text-decoration:none;transition:color var(--dur-fast) var(--ease-standard)}
+a:hover{color:var(--text-link-hover)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:var(--radius-xs)}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+hr{border:0;border-top:1px solid var(--border-subtle);margin:var(--space-7) 0}
+::selection{background:var(--tu-marker-aqua);color:var(--tu-ink)}
+
+/* Brand utility: the deck's highlighter-pen emphasis. */
+.tu-marker{background:var(--tu-marker-aqua);color:var(--tu-ink);padding:0 .18em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.tu-marker--magenta{background:var(--tu-marker-magenta);color:var(--tu-white)}
+.tu-marker--lime{background:var(--tu-marker-lime);color:var(--tu-ink)}
+.tu-marker--blue{background:var(--tu-marker-blue);color:var(--tu-white)}
+.tu-marker--violet{background:var(--tu-marker-violet);color:var(--tu-white)}
+/* Brand utility: gradient text, only on short display phrases. */
+.tu-gradient-text{background:var(--tu-gradient-brand);-webkit-background-clip:text;background-clip:text;color:transparent}

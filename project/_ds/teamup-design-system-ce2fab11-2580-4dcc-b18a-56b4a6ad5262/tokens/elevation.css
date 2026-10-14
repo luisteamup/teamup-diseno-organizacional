@@ -1,0 +1,21 @@
+/* Elevation is restrained: a hairline border does most of the separating,
+   shadow only lifts things that genuinely float (menus, modals, hover cards). */
+:root{
+  --shadow-none:none;
+  --shadow-xs:0 1px 2px rgba(14,17,22,.05);
+  --shadow-sm:0 1px 3px rgba(14,17,22,.06),0 1px 2px rgba(14,17,22,.04);
+  --shadow-md:0 4px 12px rgba(14,17,22,.07),0 1px 3px rgba(14,17,22,.05);
+  --shadow-lg:0 12px 32px rgba(14,17,22,.10),0 2px 6px rgba(14,17,22,.05);
+  --shadow-xl:0 24px 64px rgba(14,17,22,.14);
+  --shadow-card:var(--shadow-sm);
+  --shadow-card-hover:var(--shadow-md);
+  --shadow-popover:var(--shadow-lg);
+  --shadow-modal:var(--shadow-xl);
+  /* Brand-tinted glow, used sparingly under AI affordances */
+  --shadow-ai:0 6px 20px rgba(132,0,255,.18);
+  --shadow-cyan:0 6px 20px rgba(0,173,217,.20);
+
+  --blur-glass:12px; /* @kind other */
+  --glass-bg:rgba(255,255,255,.78); /* @kind color */
+  --glass-border:rgba(255,255,255,.55); /* @kind color */
+}
