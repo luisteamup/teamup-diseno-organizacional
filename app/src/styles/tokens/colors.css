@@ -1,0 +1,87 @@
+/* ── TeamUp colour system ───────────────────────────────────────────────
+   Sampled directly from the 2026 logo, pitch deck and app.teamup.mx UI.
+   Three brand hues do all the work: Cyan (tech), Violet (AI), Navy (trust).
+   Everything else is neutral, a tint of those three, or a marker highlight. */
+:root{
+  /* Brand core — exact deck / logo values */
+  --tu-cyan:#00ADD9;          /* headline accent, data bars, links on white */
+  --tu-violet:#8400FF;        /* AI / intelligence, second accent */
+  --tu-navy:#00008B;          /* headings, primary buttons, body emphasis */
+  --tu-blue:#0000FF;          /* pure blue, statistic emphasis */
+  --tu-ink:#050505;           /* logo wordmark black */
+  --tu-white:#FFFFFF;
+
+  /* Logo gradient stops (isotipo, top-left → bottom-right) */
+  --tu-grad-teal:#25D2D1;
+  --tu-grad-violet:#6B48FF;
+  --tu-grad-blue:#3D2CFD;
+  --tu-gradient-brand:linear-gradient(135deg,var(--tu-grad-teal) 0%,var(--tu-grad-violet) 55%,var(--tu-grad-blue) 100%); /* @kind color */
+  --tu-gradient-brand-soft:linear-gradient(135deg,#E6FAFA 0%,#EFEAFF 55%,#E9E7FF 100%); /* @kind color */
+
+  /* Cyan ramp */
+  --tu-cyan-50:#E6F7FC;--tu-cyan-100:#C0ECF7;--tu-cyan-200:#8ADDF0;
+  --tu-cyan-300:#4CC9E6;--tu-cyan-400:#1DB8DE;--tu-cyan-500:#00ADD9;
+  --tu-cyan-600:#0090B6;--tu-cyan-700:#00718E;--tu-cyan-800:#005368;
+
+  /* Violet ramp */
+  --tu-violet-50:#F5ECFF;--tu-violet-100:#E7D4FF;--tu-violet-200:#CFA9FF;
+  --tu-violet-300:#B57EFF;--tu-violet-400:#9C4DFF;--tu-violet-500:#8400FF;
+  --tu-violet-600:#6D00D4;--tu-violet-700:#5400A3;--tu-violet-800:#3C0075;
+
+  /* Navy / indigo ramp */
+  --tu-navy-50:#EAEAF6;--tu-navy-100:#CFCFEA;--tu-navy-200:#9E9ED5;
+  --tu-navy-300:#6E6EC0;--tu-navy-400:#3D3DA9;--tu-navy-500:#1A1A96;
+  --tu-navy-600:#00008B;--tu-navy-700:#000070;--tu-navy-800:#000052;
+
+  /* Neutrals — cool, very slightly blue-shifted greys */
+  --tu-grey-0:#FFFFFF;--tu-grey-25:#FBFCFE;--tu-grey-50:#F6F8FB;
+  --tu-grey-100:#EEF1F6;--tu-grey-200:#E1E6EE;--tu-grey-300:#C9D1DD;
+  --tu-grey-400:#9AA5B6;--tu-grey-500:#6B7789;--tu-grey-600:#4D5766;
+  --tu-grey-700:#343C48;--tu-grey-800:#1F242C;--tu-grey-900:#0E1116;
+
+  /* Semantic status — as used in the app's candidate chips */
+  --tu-success:#12A150;--tu-success-bg:#E6F7EE;--tu-success-border:#A9E5C4;
+  --tu-warning:#E2820C;--tu-warning-bg:#FDF2E0;--tu-warning-border:#F6D69B;
+  --tu-danger:#DC2B2B;--tu-danger-bg:#FCEAEA;--tu-danger-border:#F3B7B7;
+  --tu-info:#00ADD9;--tu-info-bg:#E6F7FC;--tu-info-border:#A5E2F2;
+
+  /* Marker highlights — the deck's "highlighter pen" treatment.
+     Pure, saturated, always paired with near-black or white text. */
+  --tu-marker-aqua:#00FFFF;
+  --tu-marker-magenta:#FF00FF;
+  --tu-marker-lime:#EEFF41;
+  --tu-marker-blue:#0000FF;
+  --tu-marker-violet:#8400FF;
+
+  /* ── Semantic aliases ───────────────────────────────────────────── */
+  --text-heading:var(--tu-navy-600);
+  --text-body:var(--tu-grey-700);
+  --text-muted:var(--tu-grey-500);
+  --text-faint:var(--tu-grey-400);
+  --text-on-brand:var(--tu-white);
+  --text-link:var(--tu-cyan-600);
+  --text-link-hover:var(--tu-navy-600);
+  --text-accent-ai:var(--tu-violet-500);
+
+  --surface-page:var(--tu-white);
+  --surface-subtle:var(--tu-grey-50);
+  --surface-card:var(--tu-white);
+  --surface-raised:var(--tu-white);
+  --surface-inverse:var(--tu-grey-900);
+  --surface-brand:var(--tu-navy-600);
+  --surface-ai:var(--tu-violet-50);
+  --surface-info:var(--tu-cyan-50);
+
+  --border-subtle:var(--tu-grey-200);
+  --border-default:var(--tu-grey-300);
+  --border-strong:var(--tu-grey-400);
+  --border-brand:var(--tu-navy-600);
+  --border-accent:var(--tu-cyan-500);
+  --border-ai:var(--tu-violet-300);
+
+  --focus-ring:var(--tu-cyan-500);
+
+  /* Photography overlay — the deck's B&W-photo-with-white-text treatment */
+  --overlay-photo:linear-gradient(180deg,rgba(5,5,5,.35) 0%,rgba(5,5,5,.62) 100%); /* @kind color */
+  --overlay-protect-bottom:linear-gradient(180deg,rgba(5,5,5,0) 0%,rgba(5,5,5,.78) 100%); /* @kind color */
+}
