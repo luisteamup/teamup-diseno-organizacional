@@ -187,7 +187,7 @@ function RoiChart({ on, selected }: { on: boolean; selected: string | null }) {
         const cx = X(d.roi), cy = Y(d.perf);
         const r = 12 + Math.sqrt((d.hc * d.avgSalary) / MAX_COST) * 40;
         const sel = selected === d.id;
-        const col = d.perf >= 80 ? 'var(--tu-cyan)' : d.perf >= 70 ? 'var(--tu-warning)' : 'var(--tu-danger)';
+        const col = perfColor(d.perf);
         const right = cx < 620;
         return (
           <g key={d.id} onClick={() => actions.selectDept(d.id)} style={{ cursor: 'pointer' }}>
