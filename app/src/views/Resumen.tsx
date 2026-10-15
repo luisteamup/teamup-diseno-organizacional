@@ -4,8 +4,9 @@ import { H } from '../ds/Hover';
 import { Icon } from '../ds/Icon';
 import { OUT, revealT, rv } from '../lib/anim';
 import { ease } from '../lib/format';
+import { useMobile } from '../lib/useMobile';
 import { actions, useApp } from '../state/store';
-import { KpiCard, kpiGrid } from '../components/KpiCard';
+import { KpiCard, KpiGrid } from '../components/KpiCard';
 import { caps, card, cardTitle, h1, h1Strong, linkBtn } from '../components/styles';
 
 const STORE_COLS = 'minmax(140px,1fr) 100px minmax(200px,2fr) 56px';
@@ -14,6 +15,7 @@ export function Resumen() {
   const s = useApp();
   const on = s.entered;
   const e = ease(s.p);
+  const mobile = useMobile();
 
   const kpis = [
     { value: String(Math.round(412 * e)), label: 'Colaboradores activos', note: '6 sucursales, CEDIS y corporativo', noteColor: 'var(--tu-grey-500)' },
@@ -33,17 +35,17 @@ export function Resumen() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, transition: revealT(480), ...rv(on) }}>
-        <h1 style={h1}>Una estructura que creció <strong style={h1Strong}>tienda por tienda</strong>, no por diseño.</h1>
+        <h1 style={mobile ? { ...h1, fontSize: 26 } : h1}>Una estructura que creció <strong style={h1Strong}>tienda por tienda</strong>, no por diseño.</h1>
         <p style={{ margin: 0, fontSize: 15, lineHeight: 1.65, color: 'var(--tu-grey-600)', maxWidth: 720 }}>Diagnóstico con datos de nómina y entrevistas en 6 sucursales y CEDIS. Corte: septiembre 2026.</p>
       </div>
 
-      <div style={kpiGrid}>
+      <KpiGrid>
         {kpis.map((k, i) => (
           <KpiCard key={k.label} {...k} on={on} index={i} duration={480} />
         ))}
-      </div>
+      </KpiGrid>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(360px,1fr))', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(360px,100%),1fr))', gap: 16 }}>
         {/* Plantilla por área */}
         <div style={{ ...card(), padding: 20, display: 'flex', flexDirection: 'column', gap: 16, transition: revealT(480), ...rv(on, 0, 0, 300) }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
@@ -52,7 +54,7 @@ export function Resumen() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {AREAS.map((a, i) => (
-              <div key={a.label} style={{ display: 'grid', gridTemplateColumns: '132px minmax(0,1fr) 36px', alignItems: 'center', gap: 12 }}>
+              <div key={a.label} style={{ display: 'grid', gridTemplateColumns: mobile ? '112px minmax(0,1fr) 32px' : '132px minmax(0,1fr) 36px', alignItems: 'center', gap: mobile ? 10 : 12 }}>
                 <span style={{ fontSize: 13, color: 'var(--tu-grey-700)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.label}</span>
                 <div style={{ height: 10, borderRadius: 999, background: 'var(--tu-grey-100)', overflow: 'hidden' }}>
                   <div style={{ height: '100%', borderRadius: 999, background: i === 0 ? 'var(--tu-navy-600)' : 'var(--tu-cyan)', width: on ? (a.hc / maxA) * 100 + '%' : '0%', transition: `width 900ms ${OUT}`, transitionDelay: 300 + i * 60 + 'ms' }} />
@@ -90,28 +92,51 @@ export function Resumen() {
           <span style={cardTitle}>Rotación anual por sucursal</span>
           <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>Referencia del proyecto: 30%</span>
         </div>
-        <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
-          <div style={{ minWidth: 560, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: STORE_COLS, gap: 16, padding: '0 0 8px', borderBottom: '1px solid var(--tu-grey-200)', ...caps }}>
-              <span>Sucursal</span><span>Plantilla</span><span>Rotación</span><span style={{ textAlign: 'right' }}>%</span>
-            </div>
+        {mobile ? (
+          // Móvil: una fila por sucursal, con la barra a todo el ancho debajo del nombre.
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {STORES.map((st, i) => {
               const high = st.turnover >= 50;
               return (
-                <H key={st.name} style={{ display: 'grid', gridTemplateColumns: STORE_COLS, gap: 16, alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--tu-grey-100)', fontSize: 14, transition: 'background 140ms' }} hover={{ background: 'var(--tu-grey-25)' }}>
-                  <span style={{ fontWeight: 600, color: 'var(--tu-navy-600)' }}>{st.name}</span>
-                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{st.hc}</span>
+                <div key={st.name} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '12px 0', borderBottom: '1px solid var(--tu-grey-100)' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--tu-navy-600)' }}>{st.name}</span>
+                    <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>{st.hc} personas</span>
+                    <span style={{ flex: 1 }} />
+                    <span style={{ fontSize: 15, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: high ? 'var(--tu-danger)' : 'var(--tu-navy-600)' }}>{Math.round(st.turnover * e)}%</span>
+                  </div>
                   <div style={{ position: 'relative', height: 8, borderRadius: 999, background: 'var(--tu-grey-100)' }}>
                     <div style={{ height: '100%', borderRadius: 999, background: high ? 'var(--tu-danger)' : 'var(--tu-cyan)', width: on ? st.turnover + '%' : '0%', transition: `width 900ms ${OUT}`, transitionDelay: 500 + i * 70 + 'ms' }} />
-                    {/* Referencia del proyecto: 30% */}
                     <div style={{ position: 'absolute', top: -4, bottom: -4, left: '30%', width: 2, background: 'var(--tu-navy-600)', borderRadius: 1 }} />
                   </div>
-                  <span style={{ textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: high ? 'var(--tu-danger)' : 'var(--tu-navy-600)' }}>{Math.round(st.turnover * e)}%</span>
-                </H>
+                </div>
               );
             })}
           </div>
-        </div>
+        ) : (
+          <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+            <div style={{ minWidth: 560, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: STORE_COLS, gap: 16, padding: '0 0 8px', borderBottom: '1px solid var(--tu-grey-200)', ...caps }}>
+                <span>Sucursal</span><span>Plantilla</span><span>Rotación</span><span style={{ textAlign: 'right' }}>%</span>
+              </div>
+              {STORES.map((st, i) => {
+                const high = st.turnover >= 50;
+                return (
+                  <H key={st.name} style={{ display: 'grid', gridTemplateColumns: STORE_COLS, gap: 16, alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--tu-grey-100)', fontSize: 14, transition: 'background 140ms' }} hover={{ background: 'var(--tu-grey-25)' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--tu-navy-600)' }}>{st.name}</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>{st.hc}</span>
+                    <div style={{ position: 'relative', height: 8, borderRadius: 999, background: 'var(--tu-grey-100)' }}>
+                      <div style={{ height: '100%', borderRadius: 999, background: high ? 'var(--tu-danger)' : 'var(--tu-cyan)', width: on ? st.turnover + '%' : '0%', transition: `width 900ms ${OUT}`, transitionDelay: 500 + i * 70 + 'ms' }} />
+                      {/* Referencia del proyecto: 30% */}
+                      <div style={{ position: 'absolute', top: -4, bottom: -4, left: '30%', width: 2, background: 'var(--tu-navy-600)', borderRadius: 1 }} />
+                    </div>
+                    <span style={{ textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: high ? 'var(--tu-danger)' : 'var(--tu-navy-600)' }}>{Math.round(st.turnover * e)}%</span>
+                  </H>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

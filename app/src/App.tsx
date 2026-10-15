@@ -9,9 +9,11 @@ import { Organigrama } from './views/Organigrama';
 import { Puestos } from './views/Puestos';
 import { SkillsView } from './views/skills/SkillsView';
 import { Roi } from './views/Roi';
+import { useMobile } from './lib/useMobile';
 
 export function App() {
   const s = useApp();
+  const mobile = useMobile();
 
   useEffect(() => {
     actions.start();
@@ -25,11 +27,11 @@ export function App() {
   const title = (NAV.find((n) => n.id === s.view) ?? NAV[0]).title;
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--tu-grey-50)', fontFamily: "'Outfit',sans-serif", color: 'var(--tu-grey-700)' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', overflowX: 'clip', background: 'var(--tu-grey-50)', fontFamily: "'Outfit',sans-serif", color: 'var(--tu-grey-700)' }}>
       <Sidebar />
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <Header title={title} />
-        <main style={{ flex: 1, padding: 28, boxSizing: 'border-box', width: '100%', maxWidth: 1280 }}>
+        <main style={{ flex: 1, padding: mobile ? '16px 16px 32px' : 28, boxSizing: 'border-box', width: '100%', maxWidth: 1280 }}>
           {s.view === 'resumen' && <Resumen />}
           {s.view === 'org' && <Organigrama />}
           {s.view === 'puestos' && <Puestos />}

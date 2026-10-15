@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import {
   Bot, Brain, Briefcase, ChevronDown, ChevronRight, CircleCheck, Download, FileDown,
-  GraduationCap, LayoutDashboard, Network, Sparkles, TrendingUp, X, type LucideIcon,
+  GraduationCap, LayoutDashboard, Menu, Network, Sparkles, TrendingUp, X, type LucideIcon,
 } from 'lucide-react';
 
 /** Lucide icons used by the app, keyed by their kebab-case Lucide name. */
@@ -16,6 +16,7 @@ const ICONS = {
   'file-down': FileDown,
   'graduation-cap': GraduationCap,
   'layout-dashboard': LayoutDashboard,
+  'menu': Menu,
   'network': Network,
   'sparkles': Sparkles,
   'trending-up': TrendingUp,

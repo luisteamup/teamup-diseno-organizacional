@@ -1,8 +1,11 @@
+import type React from 'react';
 import { H } from '../ds/Hover';
 import { Icon, type IconName } from '../ds/Icon';
 import { Logo } from '../ds/Logo';
 import { OUT, STD } from '../lib/anim';
 import { ease } from '../lib/format';
+import { useMobile } from '../lib/useMobile';
+import { CloseButton } from './CloseButton';
 import { actions, useApp, type View } from '../state/store';
 import { caps } from './styles';
 
@@ -18,11 +21,22 @@ export function Sidebar() {
   const s = useApp();
   const navIdx = Math.max(0, NAV.findIndex((n) => n.id === s.view));
   const phase = Math.round(50 * ease(s.p));
+  const mobile = useMobile();
+
+  // En móvil el menú es un panel que entra desde la izquierda sobre un velo.
+  const shell: React.CSSProperties = mobile
+    ? { position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 60, width: 280, maxWidth: '86vw', height: '100dvh', overflowY: 'auto', boxShadow: s.navOpen ? 'var(--shadow-xl)' : 'none', transform: s.navOpen ? 'none' : 'translateX(-100%)', visibility: s.navOpen ? 'visible' : 'hidden', transition: `transform 300ms ${OUT}, visibility 0s linear ${s.navOpen ? '0s' : '300ms'}` }
+    : { position: 'sticky', top: 0, height: '100vh' };
 
   return (
-    <aside style={{ width: 248, flex: '0 0 auto', background: '#fff', borderRight: '1px solid var(--tu-grey-200)', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh', boxSizing: 'border-box' }}>
-      <div style={{ padding: '20px 20px 16px' }}>
+    <>
+    {mobile && (
+      <div onClick={actions.closeNav} style={{ position: 'fixed', inset: 0, zIndex: 59, background: 'rgba(0,0,60,.32)', opacity: s.navOpen ? 1 : 0, pointerEvents: s.navOpen ? 'auto' : 'none', transition: `opacity 240ms ${STD}` }} />
+    )}
+    <aside aria-label="Menú principal" style={{ width: 248, flex: '0 0 auto', background: '#fff', borderRight: '1px solid var(--tu-grey-200)', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', ...shell }}>
+      <div style={{ padding: '20px 20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <Logo variant="dark" height={24} />
+        {mobile && <CloseButton onClick={actions.closeNav} />}
       </div>
 
       {/* Logo del cliente: alterna entre la paleta TeamUp y la de Ahorramart. */}
@@ -45,7 +59,7 @@ export function Sidebar() {
 
       <div style={{ padding: '0 12px 6px', ...caps, color: 'var(--tu-grey-400)' }}>Diseño organizacional</div>
       <nav style={{ position: 'relative', padding: '0 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <div style={{ position: 'absolute', left: 12, right: 12, height: 40, top: navIdx * 42, background: 'var(--tu-navy-50)', borderRadius: 8, transition: `top 260ms ${OUT}` }} />
+        <div style={{ position: 'absolute', left: 12, right: 12, height: mobile ? 44 : 40, top: navIdx * (mobile ? 46 : 42), background: 'var(--tu-navy-50)', borderRadius: 8, transition: `top 260ms ${OUT}` }} />
         {NAV.map((n) => {
           const on = n.id === s.view;
           return (
@@ -55,7 +69,7 @@ export function Sidebar() {
               onClick={() => actions.go(n.id)}
               aria-current={on ? 'page' : undefined}
               style={{
-                position: 'relative', display: 'flex', alignItems: 'center', gap: 10, height: 40, padding: '0 12px', border: 'none', background: 'transparent', borderRadius: 8,
+                position: 'relative', display: 'flex', alignItems: 'center', gap: 10, height: mobile ? 44 : 40, padding: '0 12px', border: 'none', background: 'transparent', borderRadius: 8,
                 cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, textAlign: 'left',
                 color: on ? 'var(--tu-navy-600)' : 'var(--tu-grey-600)', fontWeight: on ? 600 : 500, transition: `color 140ms ${STD}`,
               }}
@@ -82,5 +96,6 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

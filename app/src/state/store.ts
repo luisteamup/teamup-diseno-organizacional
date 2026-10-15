@@ -46,13 +46,15 @@ export interface AppState {
   empPop: boolean;
   tecPop: boolean;
   brand: boolean;
+  /** Menú lateral abierto (solo móvil) */
+  navOpen: boolean;
 }
 
 const initial: AppState = {
   view: 'resumen', ver: 'actual', sel: null, filter: 'Todos', entered: false, sub: false, p: 0, toast: false,
   role: null, dOpen: false, dtab: 'desc', dsub: false, skCat: 'Todas', skSort: 'gap', skSel: null, sksub: true,
   skTab: 'brechas', roiDept: 'ops', roiOpen: 1, roiOS: true, roiSub: true, nbSel: '2-2', tecLvl: 'Todas', tecSub: true,
-  empSel: 0, empDept: 'Todas', empSub: true, roiPop: false, empPop: false, tecPop: false, brand: false,
+  empSel: 0, empDept: 'Todas', empSub: true, roiPop: false, empPop: false, tecPop: false, brand: false, navOpen: false,
 };
 
 let state = initial;
@@ -125,7 +127,8 @@ export const actions = {
   start: run,
 
   go(view: View, extra?: Partial<AppState>) {
-    set({ view, ...extra });
+    set({ view, navOpen: false, ...extra });
+    window.scrollTo(0, 0);
     run();
   },
 
@@ -238,12 +241,16 @@ export const actions = {
     later('toast', () => set({ toast: false }), 2600);
   },
 
+  openNav() { set({ navOpen: true }); },
+  closeNav() { if (state.navOpen) set({ navOpen: false }); },
+
   openProposal() { actions.go('org', { ver: 'propuesta', sel: null }); },
   goAi() { actions.go('org', { ver: 'ai', sel: null }); },
 
   onKey(e: KeyboardEvent) {
     if (e.key !== 'Escape') return;
-    if (state.role !== null) actions.closeRole();
+    if (state.navOpen) actions.closeNav();
+    else if (state.role !== null) actions.closeRole();
     else { actions.closePop(); actions.closeEmpPop(); actions.closeTec(); }
   },
 
