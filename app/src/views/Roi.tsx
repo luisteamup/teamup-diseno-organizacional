@@ -8,9 +8,10 @@ import { Badge } from '../ds/Badge';
 import { Icon } from '../ds/Icon';
 import { H } from '../ds/Hover';
 import { Modal } from '../components/Modal';
+import { useMobile } from '../lib/useMobile';
 import { CloseButton } from '../components/CloseButton';
 import { Avatar } from '../components/Avatar';
-import { KpiCard, kpiGrid } from '../components/KpiCard';
+import { KpiCard, KpiGrid } from '../components/KpiCard';
 import { caps, card, cardTitle, h1, h1Strong, lead, linkBtn, track } from '../components/styles';
 
 const M = '$';
@@ -33,6 +34,7 @@ const BELOW_COST = DEPTS.reduce((a, d) => a + d.mix.below * d.avgSalary, 0) * 12
 
 export function Roi() {
   const s = useApp();
+  const mobile = useMobile();
   const on = s.entered;
   const e = ease(s.p);
 
@@ -63,36 +65,58 @@ export function Roi() {
       </div>
 
       {/* KPIs */}
-      <div style={kpiGrid}>
+      <KpiGrid>
         {kpis.map((k, i) => (
           <KpiCard key={k.label} value={k.value} label={k.label} note={k.note} valueColor={k.vc} valueSize={36} on={on} index={i} />
         ))}
-      </div>
+      </KpiGrid>
 
       {/* Gráfica de burbujas */}
       <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 560px', minWidth: 0, ...card(16), padding: 20, display: 'flex', flexDirection: 'column', gap: 8, transition: revealT(), ...rv(on, 0, 0, 200) }}>
+        <div style={{ flex: '1 1 560px', minWidth: 0, ...card(16), padding: mobile ? 16 : 20, display: 'flex', flexDirection: 'column', gap: 8, transition: revealT(), ...rv(on, 0, 0, 200) }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
             <span style={cardTitle}>Rendimiento vs ROI por área</span>
-            <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>Tamaño de la burbuja: costo de nómina · clic para ver el detalle</span>
+            <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>
+              {mobile ? 'Tamaño de la burbuja: costo de nómina · toca una burbuja para ver el detalle' : 'Tamaño de la burbuja: costo de nómina · clic para ver el detalle'}
+            </span>
           </div>
-          <div style={{ width: '100%', maxWidth: 860, margin: '0 auto', aspectRatio: '760/440' }}>
-            <RoiChart on={on} selected={s.roiPop ? s.roiDept : null} />
-          </div>
+          {mobile ? (
+            <>
+              {/* En móvil la gráfica conserva un ancho legible y se desliza horizontalmente. */}
+              <div style={{ overflowX: 'auto', overflowY: 'hidden', margin: '0 -16px', padding: '4px 16px 8px', WebkitOverflowScrolling: 'touch', overscrollBehaviorX: 'contain' } as CSSProperties}>
+                <div style={{ width: 680, aspectRatio: '760/440' }}>
+                  <RoiChart on={on} selected={s.roiPop ? s.roiDept : null} mobile />
+                </div>
+              </div>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--tu-grey-500)' }}>
+                Desliza para ver la gráfica completa <Icon name="chevron-right" size={14} />
+              </span>
+            </>
+          ) : (
+            <div style={{ width: '100%', maxWidth: 860, margin: '0 auto', aspectRatio: '760/440' }}>
+              <RoiChart on={on} selected={s.roiPop ? s.roiDept : null} />
+            </div>
+          )}
         </div>
       </div>
 
       {/* Áreas */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, transition: revealT(), ...rv(on, 0, 0, 260) }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
-          <span style={cardTitle}>Áreas</span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: mobile ? '8px 14px' : 16, flexWrap: 'wrap' }}>
+          <span style={mobile ? { ...cardTitle, flexBasis: '100%' } : cardTitle}>Áreas</span>
           {legendDot('var(--tu-success)', 'Cumplen')}
           {legendDot('var(--tu-warning)', 'En riesgo')}
           {legendDot('var(--tu-danger)', 'No cumplen')}
-          <span style={{ flex: 1 }} />
-          <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>Clic para ver el detalle · doble clic para cerrarlo</span>
+          {mobile ? (
+            <span style={{ flexBasis: '100%', fontSize: 12, color: 'var(--tu-grey-500)' }}>Toca un área para ver el detalle</span>
+          ) : (
+            <>
+              <span style={{ flex: 1 }} />
+              <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>Clic para ver el detalle · doble clic para cerrarlo</span>
+            </>
+          )}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(220px,100%),1fr))', gap: 12 }}>
           {DEPTS.map((d, i) => (
             <AreaCard key={d.id} dept={d} index={i} on={on} selected={s.roiPop && d.id === s.roiDept} />
           ))}
@@ -160,29 +184,34 @@ const MAX_COST = Math.max(...DEPTS.map((d) => d.hc * d.avgSalary));
 /** Burbujas de mayor a menor costo, para que las pequeñas queden encima. */
 const BY_COST = DEPTS.slice().sort((a, b) => b.hc * b.avgSalary - a.hc * a.avgSalary);
 
-function RoiChart({ on, selected }: { on: boolean; selected: string | null }) {
+function RoiChart({ on, selected, mobile = false }: { on: boolean; selected: string | null; mobile?: boolean }) {
+  // En móvil el SVG se pinta a ~680px: se suben un poco las fuentes para que sigan siendo legibles (≥ 11px reales).
+  const ax: CSSProperties = mobile ? { ...axisText, fontSize: 13 } : axisText;
+  const small = mobile ? 12.5 : 11;
+  const titleSize = mobile ? 13 : 12;
+  const labelSize = mobile ? 15 : 13;
   return (
     <svg viewBox="0 0 760 440" style={{ display: 'block', width: '100%', height: '100%', overflow: 'visible' }}>
       {[1, 2, 3, 4, 5, 6].map((v) => (
         <g key={'x' + v}>
           <line x1={X(v)} x2={X(v)} y1={40} y2={380} style={gridLine} />
-          <text x={X(v)} y={400} textAnchor="middle" style={axisText}>{v}x</text>
+          <text x={X(v)} y={400} textAnchor="middle" style={ax}>{v}x</text>
         </g>
       ))}
       {[60, 70, 80, 90, 100].map((p) => (
         <g key={'y' + p}>
           <line x1={90} x2={720} y1={Y(p)} y2={Y(p)} style={gridLine} />
-          <text x={80} y={Y(p) + 4} textAnchor="end" style={axisText}>{p}%</text>
+          <text x={80} y={Y(p) + 4} textAnchor="end" style={ax}>{p}%</text>
         </g>
       ))}
       <line x1={X(3)} x2={X(3)} y1={40} y2={380} style={{ stroke: 'var(--tu-grey-300)', strokeWidth: 1.5, strokeDasharray: '5 5' }} />
       <line x1={90} x2={720} y1={Y(80)} y2={Y(80)} style={{ stroke: 'var(--tu-navy-200)', strokeWidth: 1.5, strokeDasharray: '5 5' }} />
-      <text x={716} y={Y(80) - 6} textAnchor="end" style={{ fontSize: 11, fontWeight: 600, fill: 'var(--tu-navy-400)', fontFamily: FONT, letterSpacing: '.06em' }}>META 80%</text>
+      <text x={716} y={Y(80) - 6} textAnchor="end" style={{ fontSize: small, fontWeight: 600, fill: 'var(--tu-navy-400)', fontFamily: FONT, letterSpacing: '.06em' }}>META 80%</text>
       {QUADRANTS.map(([label, x, y, anchor]) => (
-        <text key={label} x={x} y={y} textAnchor={anchor} style={{ fontSize: 11, fontWeight: 600, fill: 'var(--tu-grey-400)', fontFamily: FONT, letterSpacing: '.08em' }}>{label}</text>
+        <text key={label} x={x} y={y} textAnchor={anchor} style={{ fontSize: small, fontWeight: 600, fill: 'var(--tu-grey-400)', fontFamily: FONT, letterSpacing: '.08em' }}>{label}</text>
       ))}
-      <text x={405} y={428} textAnchor="middle" style={{ fontSize: 12, fill: 'var(--tu-grey-600)', fontFamily: FONT }}>ROI de nómina: valor generado por cada 1 peso de nómina</text>
-      <text x={0} y={0} transform="translate(22,210) rotate(-90)" textAnchor="middle" style={{ fontSize: 12, fill: 'var(--tu-grey-600)', fontFamily: FONT }}>Cumplimiento de resultados</text>
+      <text x={405} y={428} textAnchor="middle" style={{ fontSize: titleSize, fill: 'var(--tu-grey-600)', fontFamily: FONT }}>ROI de nómina: valor generado por cada 1 peso de nómina</text>
+      <text x={0} y={0} transform="translate(22,210) rotate(-90)" textAnchor="middle" style={{ fontSize: titleSize, fill: 'var(--tu-grey-600)', fontFamily: FONT }}>Cumplimiento de resultados</text>
       {BY_COST.map((d, i) => {
         const cx = X(d.roi), cy = Y(d.perf);
         const r = 12 + Math.sqrt((d.hc * d.avgSalary) / MAX_COST) * 40;
@@ -191,6 +220,8 @@ function RoiChart({ on, selected }: { on: boolean; selected: string | null }) {
         const right = cx < 620;
         return (
           <g key={d.id} onClick={() => actions.selectDept(d.id)} style={{ cursor: 'pointer' }}>
+            {/* Área táctil mínima en móvil (≈ 44px reales) para las burbujas pequeñas. */}
+            {mobile && <circle cx={cx} cy={cy} r={Math.max(r, 25)} style={{ fill: 'transparent' }} />}
             <circle
               cx={cx} cy={cy} r={r}
               style={{
@@ -201,7 +232,7 @@ function RoiChart({ on, selected }: { on: boolean; selected: string | null }) {
             />
             <text
               x={right ? cx + r + 6 : cx - r - 6} y={cy + 4} textAnchor={right ? 'start' : 'end'}
-              style={{ fontSize: 13, fontWeight: sel ? 700 : 600, fill: 'var(--tu-navy-600)', fontFamily: FONT, opacity: on ? 1 : 0, transition: `opacity 400ms ${400 + i * 70}ms` }}
+              style={{ fontSize: labelSize, fontWeight: sel ? 700 : 600, fill: 'var(--tu-navy-600)', fontFamily: FONT, opacity: on ? 1 : 0, transition: `opacity 400ms ${400 + i * 70}ms` }}
             >
               {d.short}
             </text>
@@ -215,6 +246,7 @@ function RoiChart({ on, selected }: { on: boolean; selected: string | null }) {
 // ── Drill down del área seleccionada ───────────────────────────────────
 function DrillDown() {
   const s = useApp();
+  const mobile = useMobile();
   const D = DEPT_BY_ID[s.roiDept];
   const ds = s.entered && s.roiSub;
   const emps = EMPS.filter((x) => x.dept === D.id);
@@ -230,7 +262,20 @@ function DrillDown() {
 
   return (
     <Modal open={s.roiPop} onClose={actions.closePop} maxWidth={1040} label={D.full}>
-      <div style={{ padding: 20, borderBottom: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ padding: mobile ? 16 : 20, borderBottom: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {mobile ? (
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={caps}>Drill down</span>
+              <span style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.25, letterSpacing: '-.018em', color: 'var(--tu-navy-600)' }}>{D.full}</span>
+              <span style={{ fontSize: 13, color: 'var(--tu-grey-500)' }}>Titular: {D.lead}</span>
+            </div>
+            {/* Envoltura de 40px para ampliar el área táctil del botón de 32px. */}
+            <span onClick={actions.closePop} style={{ display: 'flex', padding: 4, margin: -4, flex: '0 0 auto' }}>
+              <CloseButton onClick={() => {}} />
+            </span>
+          </div>
+        ) : (
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
           <span style={caps}>Drill down</span>
           <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-.018em', color: 'var(--tu-navy-600)' }}>{D.full}</span>
@@ -238,7 +283,8 @@ function DrillDown() {
           <span style={{ fontSize: 13, color: 'var(--tu-grey-500)' }}>Titular: {D.lead}</span>
           <CloseButton onClick={actions.closePop} />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12 }}>
+        )}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(140px,100%),1fr))', gap: 12 }}>
           {stats.map(([v, l, c], i) => (
             <div key={l} style={{ display: 'flex', flexDirection: 'column', gap: 2, transition: revealT(), ...rv(ds, i, 50, 0) }}>
               <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-.03em', color: c, fontVariantNumeric: 'tabular-nums' }}>{v}</span>
@@ -259,9 +305,16 @@ function DrillDown() {
           </div>
         </div>
       </div>
-      <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--tu-grey-100)', background: 'var(--tu-grey-25)', ...caps }}>
+      <div style={{ padding: mobile ? '12px 16px' : '12px 20px', borderBottom: '1px solid var(--tu-grey-100)', background: 'var(--tu-grey-25)', ...caps }}>
         Colaboradores clave evaluados · {emps.length} de {D.hc}
       </div>
+      {mobile ? (
+        <div>
+          {emps.map((x, i) => (
+            <EmployeeRow key={x.index} emp={x} index={i} on={ds} open={s.roiOpen === x.index} subOn={s.roiOS} mobile />
+          ))}
+        </div>
+      ) : (
       <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
         <div style={{ minWidth: 700 }}>
           {emps.map((x, i) => (
@@ -269,12 +322,13 @@ function DrillDown() {
           ))}
         </div>
       </div>
+      )}
     </Modal>
   );
 }
 
 // ── Fila expandible de colaborador ─────────────────────────────────────
-function EmployeeRow({ emp: x, index, on, open, subOn }: { emp: Employee; index: number; on: boolean; open: boolean; subOn: boolean }) {
+function EmployeeRow({ emp: x, index, on, open, subOn, mobile = false }: { emp: Employee; index: number; on: boolean; open: boolean; subOn: boolean; mobile?: boolean }) {
   const reveal = rv(on, index, 50, 60);
   const ok = x.status === 'Cumple';
   const c = TEC_BY_ID[x.course];
@@ -286,6 +340,44 @@ function EmployeeRow({ emp: x, index, on, open, subOn }: { emp: Employee; index:
 
   return (
     <div style={{ borderBottom: '1px solid var(--tu-grey-100)', transition: revealT(), ...reveal }}>
+      {mobile ? (
+        /* Móvil: fila apilada — persona + chevron, costo + estado, barra de cumplimiento. */
+        <H
+          as="button"
+          onClick={() => actions.toggleRoi(x.index)}
+          style={{
+            width: '100%', display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 16px', border: 'none',
+            background: open ? 'var(--tu-grey-25)' : '#fff', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer', transition: 'background 140ms',
+          }}
+          hover={{ background: 'var(--tu-grey-25)' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+            <Avatar ini={x.ini} />
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--tu-navy-600)' }}>{x.name}</span>
+              <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>{x.role} · {x.site}</span>
+            </div>
+            <span style={{ display: 'flex', color: 'var(--tu-grey-400)', transform: open ? 'rotate(180deg)' : 'none', transition: `transform 220ms ${STD}` }}>
+              <Icon name="chevron-down" size={16} />
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingLeft: 42 }}>
+            <span style={{ display: 'flex', alignItems: 'baseline', gap: 6, minWidth: 0 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--tu-navy-600)', fontVariantNumeric: 'tabular-nums' }}>{M + fmt(x.salary * CARGA)}</span>
+              <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>costo mensual</span>
+            </span>
+            <span style={{ display: 'flex', flex: '0 0 auto' }}>
+              <Badge tone={STATUS_TONE[x.status]} size="sm">{x.status}</Badge>
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 42 }}>
+            <div style={track(6, { flex: 1 })}>
+              <div style={{ height: '100%', borderRadius: 999, background: perfC, width: on ? Math.min(100, x.perf) + '%' : '0%', transition: `width 800ms ${OUT}`, transitionDelay: reveal.transitionDelay }} />
+            </div>
+            <span style={{ width: 42, textAlign: 'right', fontSize: 13, fontWeight: 700, color: perfC, fontVariantNumeric: 'tabular-nums' }}>{x.perf}%</span>
+          </div>
+        </H>
+      ) : (
       <H
         as="button"
         onClick={() => actions.toggleRoi(x.index)}
@@ -319,9 +411,10 @@ function EmployeeRow({ emp: x, index, on, open, subOn }: { emp: Employee; index:
           <Icon name="chevron-down" size={16} />
         </span>
       </H>
+      )}
       {open && (
-        <div style={{ padding: '4px 20px 20px 62px', display: 'flex', flexWrap: 'wrap', gap: 20, opacity: subOn ? 1 : 0, transform: subOn ? 'none' : 'translateY(8px)', transition: `opacity 320ms ${OUT},transform 320ms ${OUT}` }}>
-          <div style={{ flex: '1 1 380px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ padding: mobile ? '4px 16px 20px' : '4px 20px 20px 62px', display: 'flex', flexWrap: 'wrap', gap: 20, opacity: subOn ? 1 : 0, transform: subOn ? 'none' : 'translateY(8px)', transition: `opacity 320ms ${OUT},transform 320ms ${OUT}` }}>
+          <div style={{ flex: mobile ? '1 1 100%' : '1 1 380px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <span style={caps}>Diagnóstico</span>
             <p style={{ margin: '-6px 0 0', fontSize: 14, lineHeight: 1.6, color: 'var(--tu-grey-700)', textWrap: 'pretty' } as CSSProperties}>
               {ok ? 'Cumple ' + x.perf + '% de sus resultados esperados. Perfil con ' + x.fitNext + '% de preparación para ' + x.nextRole + '.' : x.cause}
@@ -343,7 +436,7 @@ function EmployeeRow({ emp: x, index, on, open, subOn }: { emp: Employee; index:
               </div>
             ))}
           </div>
-          <div style={{ flex: '1 1 240px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ flex: mobile ? '1 1 100%' : '1 1 240px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <H
               as="a"
               href={c.url}
@@ -361,7 +454,7 @@ function EmployeeRow({ emp: x, index, on, open, subOn }: { emp: Employee; index:
                 ? 'Siguiente paso: ' + x.nextRole + ' · ' + readyLabel(x.fitNext).toLowerCase() + '.'
                 : 'Meta: pasar de ' + x.perf + '% a 90% de cumplimiento en 90 días.'}
             </span>
-            <H as="button" onClick={() => actions.goEmp(x.index)} style={{ ...linkBtn, textAlign: 'left' }} hover={{ color: 'var(--tu-navy-600)' }}>
+            <H as="button" onClick={() => actions.goEmp(x.index)} style={mobile ? { ...linkBtn, textAlign: 'left', minHeight: 40 } : { ...linkBtn, textAlign: 'left' }} hover={{ color: 'var(--tu-navy-600)' }}>
               Ver perfil de skills →
             </H>
           </div>

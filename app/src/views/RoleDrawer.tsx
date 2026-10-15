@@ -4,6 +4,7 @@ import { H } from '../ds/Hover';
 import { Icon } from '../ds/Icon';
 import { OUT, STD, revealT, rv } from '../lib/anim';
 import { SKILL_BY_NAME, gapColor, skillColor } from '../lib/skills';
+import { useMobile } from '../lib/useMobile';
 import { actions, useApp, type RoleTab } from '../state/store';
 import { CloseButton } from '../components/CloseButton';
 import { caps, linkBtn } from '../components/styles';
@@ -39,16 +40,18 @@ function RoleDetail({ index, tabIdx }: { index: number; tabIdx: number }) {
   const s = useApp();
   const r = ROLES[index];
   const ds = s.dsub;
+  const mobile = useMobile();
+  const px = mobile ? 16 : 24;
 
   return (
     <>
-      <div style={{ padding: '20px 24px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ padding: `${mobile ? 16 : 20}px ${px}px 16px`, display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={caps}>{r.level} · {r.area}</span>
           <span style={{ flex: 1 }} />
           <CloseButton onClick={actions.closeRole} />
         </div>
-        <span style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-.025em', lineHeight: 1.15, color: 'var(--tu-navy-600)' }}>{r.title}</span>
+        <span style={{ fontSize: mobile ? 22 : 26, fontWeight: 700, letterSpacing: '-.025em', lineHeight: 1.15, color: 'var(--tu-navy-600)' }}>{r.title}</span>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Badge tone={STATUS_TONE[r.status]} size="sm">{r.status}</Badge>
           <Badge tone="ai" size="sm">{r.aiPct}% automatizable</Badge>
@@ -56,7 +59,7 @@ function RoleDetail({ index, tabIdx }: { index: number; tabIdx: number }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', borderTop: '1px solid var(--tu-grey-100)', borderBottom: '1px solid var(--tu-grey-100)' }}>
-        <div style={{ padding: '14px 24px', borderRight: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ padding: `14px ${mobile ? 16 : 24}px`, borderRight: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-.03em', color: 'var(--tu-navy-600)', fontVariantNumeric: 'tabular-nums' }}>{r.hc}</span>
           <span style={{ fontSize: 12, color: 'var(--tu-grey-600)' }}>Ocupantes</span>
         </div>
@@ -87,7 +90,7 @@ function RoleDetail({ index, tabIdx }: { index: number; tabIdx: number }) {
         ))}
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ flex: 1, overflowY: 'auto', overscrollBehavior: 'contain', padding: px, paddingBottom: mobile ? 32 : px, display: 'flex', flexDirection: 'column', gap: 20 }}>
         {s.dtab === 'desc' && (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, transition: revealT(420), ...rv(ds) }}>

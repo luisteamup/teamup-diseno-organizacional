@@ -4,6 +4,8 @@ import { Chips } from '../../components/Chips';
 import { card, h2, lead } from '../../components/styles';
 import { revealT, rv } from '../../lib/anim';
 import { EMPS } from '../../lib/talent';
+import { Modal } from '../../components/Modal';
+import { useMobile } from '../../lib/useMobile';
 import { actions, useApp } from '../../state/store';
 import { EmployeeProfile } from './EmployeeProfile';
 
@@ -18,6 +20,8 @@ export function Empleados() {
   const s = useApp();
   const on = s.entered;
   const rows = EMPS.filter(inDept(s.empDept));
+  // En móvil solo se muestra la lista; el perfil se abre como hoja inferior.
+  const mobile = useMobile();
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, transition: revealT(), ...rv(on) }}>
@@ -26,15 +30,15 @@ export function Empleados() {
       </div>
       <Chips options={DEPT_CHIPS} active={s.empDept} counts={COUNTS} onPick={(l) => actions.setEmpDept(l, DEPTS)} />
       <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 300px', maxWidth: 380, minWidth: 0, ...card(16), overflow: 'hidden', transition: revealT(), ...rv(on, 0, 0, 100) }}>
+        <div style={{ flex: '1 1 300px', maxWidth: mobile ? 'none' : 380, minWidth: 0, ...card(16), overflow: 'hidden', transition: revealT(), ...rv(on, 0, 0, 100) }}>
           {rows.map((x, i) => (
             <button
               key={x.index}
               type="button"
-              onClick={() => actions.pickEmp(x.index)}
+              onClick={() => (mobile ? actions.openEmpPop(x.index) : actions.pickEmp(x.index))}
               style={{
                 width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', border: 'none', borderBottom: '1px solid var(--tu-grey-100)',
-                background: x.index === s.empSel ? 'var(--tu-navy-50)' : '#fff', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer',
+                background: x.index === s.empSel && !mobile ? 'var(--tu-navy-50)' : '#fff', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer',
                 transition: `${revealT()},background 140ms`, ...rv(on, i, 30, 120),
               }}
             >
@@ -50,10 +54,17 @@ export function Empleados() {
             </button>
           ))}
         </div>
-        <div style={{ flex: '1 1 560px', minWidth: 0, ...card(16), overflow: 'hidden', transition: revealT(), ...rv(on, 0, 0, 180) }}>
-          <EmployeeProfile />
-        </div>
+        {!mobile && (
+          <div style={{ flex: '1 1 560px', minWidth: 0, ...card(16), overflow: 'hidden', transition: revealT(), ...rv(on, 0, 0, 180) }}>
+            <EmployeeProfile />
+          </div>
+        )}
       </div>
+      {mobile && (
+        <Modal open={s.empPop} onClose={actions.closeEmpPop} maxWidth={980} label="Perfil del colaborador">
+          <EmployeeProfile onClose={actions.closeEmpPop} showRadar={s.empPop} />
+        </Modal>
+      )}
     </>
   );
 }

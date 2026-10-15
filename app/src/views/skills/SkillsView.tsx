@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { H } from '../../ds/Hover';
 import { OUT } from '../../lib/anim';
 import { actions, useApp, type SkillTab } from '../../state/store';
@@ -14,10 +15,17 @@ export function SkillsView() {
   const s = useApp();
   const ti = Math.max(0, TABS.findIndex((t) => t[0] === s.skTab));
   const left = TABS.slice(0, ti).reduce((a, t) => a + t[2] + 4, 0);
+  const bar = useRef<HTMLDivElement>(null);
+
+  // En pantallas angostas la barra se desplaza: mantiene visible la pestaña activa.
+  useEffect(() => {
+    const el = bar.current;
+    if (el && el.scrollWidth > el.clientWidth) el.scrollTo({ left: Math.max(0, left - (el.clientWidth - TABS[ti][2]) / 2), behavior: 'smooth' });
+  }, [left, ti]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div role="tablist" style={{ position: 'relative', display: 'flex', gap: 4, borderBottom: '1px solid var(--tu-grey-200)', overflowX: 'auto', overflowY: 'hidden' }}>
+      <div ref={bar} role="tablist" style={{ position: 'relative', scrollbarWidth: 'none', display: 'flex', gap: 4, borderBottom: '1px solid var(--tu-grey-200)', overflowX: 'auto', overflowY: 'hidden' }}>
         <div style={{ position: 'absolute', bottom: -1, height: 2, width: TABS[ti][2], left, background: 'var(--tu-navy-600)', transition: `left 260ms ${OUT},width 260ms ${OUT}` }} />
         {TABS.map(([id, label, w]) => (
           <H

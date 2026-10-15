@@ -27,10 +27,12 @@ interface ButtonProps {
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   style?: CSSProperties;
+  /** Nombre accesible, necesario cuando el botón solo lleva icono. */
+  ariaLabel?: string;
 }
 
 /** TeamUp DS `Button`. Hover darkens one ramp step, press scales to .985. */
-export function Button({ children, variant = 'primary', size = 'md', icon, iconRight, fullWidth = false, disabled = false, onClick, style }: ButtonProps) {
+export function Button({ children, variant = 'primary', size = 'md', icon, iconRight, fullWidth = false, disabled = false, onClick, style, ariaLabel }: ButtonProps) {
   const [hover, setHover] = useState(false);
   const [down, setDown] = useState(false);
   const s = SIZES[size] ?? SIZES.md;
@@ -56,6 +58,8 @@ export function Button({ children, variant = 'primary', size = 'md', icon, iconR
   return (
     <button
       type="button"
+      aria-label={ariaLabel}
+      title={ariaLabel}
       style={css}
       disabled={disabled}
       onClick={onClick}

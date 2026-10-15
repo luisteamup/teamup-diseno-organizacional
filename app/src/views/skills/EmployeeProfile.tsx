@@ -10,6 +10,7 @@ import { sum } from '../../lib/format';
 import {
   DIMS, EMPS, MOVE_TONE, STATUS_TONE, TEC_BY_ID, mobilityOf, readyLabel, readyTone, type Employee,
 } from '../../lib/talent';
+import { useMobile } from '../../lib/useMobile';
 import { useApp } from '../../state/store';
 import { Radar } from './Radar';
 
@@ -85,6 +86,24 @@ const dimGrid = { display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 44px 48px
 /** Encabezado: avatar, nombre, puesto, meta y badges (más cierre en el pop-up). */
 export function ProfileHeader({ ep, onClose }: { ep: Profile; onClose?: () => void }) {
   const e = ep.emp;
+  const mobile = useMobile();
+  if (mobile) {
+    return (
+      <div style={{ padding: 16, borderBottom: '1px solid var(--tu-grey-100)', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+        <Avatar ini={e.ini} size={48} fontSize={18} solid />
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.2, color: 'var(--tu-navy-600)' }}>{e.name}</span>
+          <span style={{ fontSize: 14, color: 'var(--tu-grey-600)' }}>{ep.roleSite}</span>
+          <span style={{ fontSize: 12, lineHeight: 1.45, color: 'var(--tu-grey-500)' }}>{ep.meta}</span>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+            <Badge tone={STATUS_TONE[e.status]} size="sm">{e.status}</Badge>
+            <Badge tone={MOVE_TONE[e.move]} size="sm">{e.move}</Badge>
+          </div>
+        </div>
+        {onClose && <CloseButton onClick={onClose} />}
+      </div>
+    );
+  }
   return (
     <div style={{ padding: 20, borderBottom: '1px solid var(--tu-grey-100)', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
       <Avatar ini={e.ini} size={52} fontSize={20} solid />
@@ -106,12 +125,13 @@ export function ProfileHeader({ ep, onClose }: { ep: Profile; onClose?: () => vo
 function Comparison({ ep, showRadar, on2 }: { ep: Profile; showRadar: boolean; on2: boolean }) {
   const e = ep.emp;
   const legendRow = { display: 'flex', alignItems: 'center', gap: 10 } as const;
+  const mobile = useMobile();
   return (
-    <div style={{ padding: 20, display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-      <div style={{ flex: '1 1 340px', minWidth: 0 }}>
+    <div style={mobile ? { padding: 16, display: 'flex', flexDirection: 'column', gap: 16 } : { padding: 20, display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+      <div style={{ flex: mobile ? '0 0 auto' : '1 1 340px', minWidth: 0 }}>
         <div style={{ width: '100%', maxWidth: 540, margin: '0 auto', aspectRatio: '520/440' }}>{showRadar && <Radar emp={e} on={on2} />}</div>
       </div>
-      <div style={{ flex: '1 1 260px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ flex: mobile ? '0 0 auto' : '1 1 260px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: 'var(--tu-grey-700)' }}>
           <span style={legendRow}>
             <span style={{ width: 14, height: 14, flex: '0 0 auto', borderRadius: 3, background: 'var(--tu-cyan-100)', border: '2px solid var(--tu-cyan)', boxSizing: 'border-box' }} />
@@ -180,26 +200,27 @@ function pathStyle(state: PathState, up: boolean) {
 function CareerPathNow({ ep, on2 }: { ep: Profile; on2: boolean }) {
   const ci = ep.path.findIndex((p) => p.state === 'current');
   const cur = ep.cur;
+  const mobile = useMobile();
   return (
-    <div style={{ padding: 20, borderTop: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ padding: mobile ? 16 : 20, borderTop: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={sectionHead}>
         <span style={cardTitle}>Career path actual</span>
         <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>Ruta: {ep.pathName}</span>
       </div>
-      <div style={{ overflowX: 'auto', overflowY: 'hidden', paddingBottom: 4 }}>
-        <div style={{ display: 'flex', alignItems: 'center', width: 'max-content' }}>
+      <div style={mobile ? undefined : { overflowX: 'auto', overflowY: 'hidden', paddingBottom: 4 }}>
+        <div style={mobile ? { display: 'flex', flexDirection: 'column', alignItems: 'stretch' } : { display: 'flex', alignItems: 'center', width: 'max-content' }}>
           {ep.path.map((ps, j) => {
             const st = pathStyle(ps.state, ep.up);
             return (
               <Fragment key={j}>
-                {j > 0 && <span style={{ width: 28, height: 2, flex: '0 0 auto', background: j <= ci ? 'var(--tu-navy-200)' : 'var(--tu-grey-200)' }} />}
+                {j > 0 && <span style={{ width: mobile ? 2 : 28, height: mobile ? 12 : 2, flex: '0 0 auto', alignSelf: mobile ? 'center' : undefined, background: j <= ci ? 'var(--tu-navy-200)' : 'var(--tu-grey-200)' }} />}
                 <div
                   style={{
-                    width: 156, flex: '0 0 auto', boxSizing: 'border-box', padding: '10px 12px', borderRadius: 12, border: st.border, background: st.bg,
+                    width: mobile ? '100%' : 156, flex: '0 0 auto', boxSizing: 'border-box', padding: '10px 12px', borderRadius: 12, border: st.border, background: st.bg,
                     display: 'flex', flexDirection: 'column', gap: 3, transition: revealT(), ...rv(on2, j, 60, 100),
                   }}
                 >
-                  <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: st.capC }}>{st.label}</span>
+                  <span style={{ fontSize: mobile ? 11 : 10, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: st.capC }}>{st.label}</span>
                   <span style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.3, color: st.titleC }}>{ps.title}</span>
                 </div>
               </Fragment>
@@ -232,13 +253,14 @@ function CareerPathNow({ ep, on2 }: { ep: Profile; on2: boolean }) {
 }
 
 function Mobility({ ep, on2 }: { ep: Profile; on2: boolean }) {
+  const mobile = useMobile();
   return (
-    <div style={{ padding: 20, borderTop: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ padding: mobile ? 16 : 20, borderTop: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={sectionHead}>
         <span style={cardTitle}>Movilidad interna</span>
         <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>Puestos donde sus habilidades encajan hoy</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(200px,100%),1fr))', gap: 10 }}>
         {ep.mobility.map((mb, j) => {
           const c = fitColor(mb.fit);
           const r = rv(on2, j, 60, 160);
@@ -268,8 +290,9 @@ function Mobility({ ep, on2 }: { ep: Profile; on2: boolean }) {
 }
 
 function TecRoute({ ep }: { ep: Profile }) {
+  const mobile = useMobile();
   return (
-    <div style={{ padding: '16px 20px', borderTop: '1px solid var(--tu-grey-100)', background: 'var(--tu-grey-25)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ padding: mobile ? 16 : '16px 20px', borderTop: '1px solid var(--tu-grey-100)', background: 'var(--tu-grey-25)', display: 'flex', flexDirection: 'column', gap: 10 }}>
       <span style={caps}>Ruta sugerida en Tecmilenio</span>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {ep.route.map((t) => (
@@ -279,10 +302,10 @@ function TecRoute({ ep }: { ep: Profile }) {
             href={t.url}
             target="_blank"
             rel="noopener"
-            style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '8px 12px', border: '1px solid var(--tu-grey-200)', borderRadius: 8, background: '#fff', textDecoration: 'none', transition: 'border-color 140ms' }}
+            style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '8px 12px', border: '1px solid var(--tu-grey-200)', borderRadius: 8, background: '#fff', textDecoration: 'none', transition: 'border-color 140ms', ...(mobile ? { flex: '1 1 100%', minWidth: 0, boxSizing: 'border-box' } : {}) }}
             hover={{ borderColor: 'var(--tu-cyan-600)' }}
           >
-            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--tu-grey-500)' }}>{t.level} · {t.type}</span>
+            <span style={{ fontSize: mobile ? 11 : 10, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--tu-grey-500)' }}>{t.level} · {t.type}</span>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--tu-navy-600)' }}>{t.name} ↗</span>
           </H>
         ))}

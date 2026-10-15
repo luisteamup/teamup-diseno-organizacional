@@ -9,6 +9,7 @@ import { caps, card, cardTitle, h2, lead, tableHead } from '../../components/sty
 import { OUT, STD, revealT, rv } from '../../lib/anim';
 import { ease } from '../../lib/format';
 import { EMPS, EMP_BY_NAME, MOVE_COLOR, MOVE_TONE, fitOf, readyColor, readyLabel, readyTone } from '../../lib/talent';
+import { useMobile } from '../../lib/useMobile';
 import { actions, useApp } from '../../state/store';
 import { EmployeeProfile } from './EmployeeProfile';
 import { TecPopup } from './TecPopup';
@@ -27,8 +28,9 @@ const RISK_TONE: Record<string, Tone> = { 'Alto': 'danger', 'Medio': 'warning', 
 const liftT = `opacity 420ms ${OUT},transform 220ms ${STD},box-shadow 220ms ${STD}`;
 
 function MoveStats({ on, e }: { on: boolean; e: number }) {
+  const mobile = useMobile();
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 12 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: mobile ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fit,minmax(min(200px,100%),1fr))', gap: mobile ? 10 : 12 }}>
       {MOVE_STATS.map(([k, label, sub], i) => {
         const n = EMPS.filter((x) => x.move === k).length;
         const keep = k === 'Se mantiene';
@@ -36,14 +38,14 @@ function MoveStats({ on, e }: { on: boolean; e: number }) {
           <div
             key={k}
             style={{
-              border: '2px solid ' + (keep ? 'var(--tu-grey-300)' : MOVE_COLOR[k]), borderRadius: 20, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14,
+              border: '2px solid ' + (keep ? 'var(--tu-grey-300)' : MOVE_COLOR[k]), borderRadius: mobile ? 16 : 20, padding: mobile ? '12px 12px' : '14px 18px', display: 'flex', alignItems: 'center', gap: mobile ? 10 : 14, minWidth: mobile ? 0 : undefined,
               transition: revealT(), ...rv(on, i, 70, 80),
             }}
           >
-            <span style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-.03em', color: keep ? 'var(--tu-navy-600)' : MOVE_COLOR[k], fontVariantNumeric: 'tabular-nums' }}>{Math.round(n * e)}</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--tu-navy-600)' }}>{label}</span>
-              <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>{sub}</span>
+            <span style={{ fontSize: mobile ? 24 : 30, fontWeight: 800, letterSpacing: '-.03em', color: keep ? 'var(--tu-navy-600)' : MOVE_COLOR[k], fontVariantNumeric: 'tabular-nums' }}>{Math.round(n * e)}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: mobile ? 0 : undefined }}>
+              <span style={{ fontSize: mobile ? 14 : 15, fontWeight: 700, color: 'var(--tu-navy-600)' }}>{label}</span>
+              <span style={{ fontSize: mobile ? 11 : 12, lineHeight: mobile ? 1.35 : undefined, color: 'var(--tu-grey-500)' }}>{sub}</span>
             </div>
           </div>
         );
@@ -53,13 +55,14 @@ function MoveStats({ on, e }: { on: boolean; e: number }) {
 }
 
 function NineBox({ on, sel }: { on: boolean; sel: string }) {
+  const mobile = useMobile();
   return (
-    <div style={{ flex: '1 1 100%', minWidth: 0, ...card(16), padding: 20, display: 'flex', flexDirection: 'column', gap: 14, transition: revealT(), ...rv(on, 0, 0, 140) }}>
+    <div style={{ flex: '1 1 100%', minWidth: 0, ...card(16), padding: mobile ? 14 : 20, display: 'flex', flexDirection: 'column', gap: 14, transition: revealT(), ...rv(on, 0, 0, 140) }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
         <span style={cardTitle}>Matriz de talento 9-box</span>
         <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>Desempeño vs. potencial · selecciona un cuadrante</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '24px repeat(3,minmax(0,1fr))', gap: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: mobile ? '20px repeat(3,minmax(0,1fr))' : '24px repeat(3,minmax(0,1fr))', gap: mobile ? 6 : 8 }}>
         {NINE_ROWS.map(([pt, label], ri) => (
           <Fragment key={pt}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -75,7 +78,7 @@ function NineBox({ on, sel }: { on: boolean; sel: string }) {
                   as="button"
                   onClick={() => actions.setNbSel(key)}
                   style={{
-                    minHeight: 132, boxSizing: 'border-box', padding: 14, borderRadius: 12, border: '1px solid var(--tu-grey-200)',
+                    minHeight: mobile ? 116 : 132, minWidth: mobile ? 0 : undefined, boxSizing: 'border-box', padding: mobile ? 8 : 14, borderRadius: mobile ? 10 : 12, border: '1px solid var(--tu-grey-200)',
                     background: B.move === 'Sube' ? 'var(--tu-cyan-50)' : B.move === 'Se reubica' ? 'var(--tu-danger-bg)' : '#fff',
                     boxShadow: sel === key ? '0 0 0 2px var(--tu-navy-600), var(--shadow-md)' : 'none',
                     fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 4,
@@ -83,12 +86,12 @@ function NineBox({ on, sel }: { on: boolean; sel: string }) {
                   }}
                   hover={{ transform: 'translateY(-2px)' }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--tu-navy-600)' }}>{B.title}</span>
-                    <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-.03em', color: ppl.length ? MOVE_COLOR[B.move] : 'var(--tu-grey-300)', fontVariantNumeric: 'tabular-nums' }}>{ppl.length}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: mobile ? 4 : 6 }}>
+                    <span style={{ fontSize: mobile ? 12 : 13, fontWeight: 700, lineHeight: mobile ? 1.25 : undefined, ...(mobile ? { minWidth: 0, overflowWrap: 'anywhere' } : {}), color: 'var(--tu-navy-600)' }}>{B.title}</span>
+                    <span style={{ fontSize: mobile ? 18 : 22, fontWeight: 800, letterSpacing: '-.03em', color: ppl.length ? MOVE_COLOR[B.move] : 'var(--tu-grey-300)', fontVariantNumeric: 'tabular-nums' }}>{ppl.length}</span>
                   </div>
-                  <span style={{ fontSize: 12, color: 'var(--tu-grey-600)' }}>{B.action}</span>
-                  <span style={{ marginTop: 'auto', fontSize: 12, lineHeight: 1.4, color: 'var(--tu-grey-500)' }}>
+                  <span style={{ fontSize: mobile ? 11 : 12, lineHeight: mobile ? 1.3 : undefined, color: 'var(--tu-grey-600)' }}>{B.action}</span>
+                  <span style={{ marginTop: 'auto', fontSize: mobile ? 11 : 12, lineHeight: mobile ? 1.3 : 1.4, color: 'var(--tu-grey-500)' }}>
                     {ppl.slice(0, 3).map((x) => x.first).join(', ') + (ppl.length > 3 ? ' +' + (ppl.length - 3) : '')}
                   </span>
                 </H>
@@ -116,7 +119,7 @@ function QuadrantPeople({ on, sel }: { on: boolean; sel: string }) {
         <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-.018em', color: 'var(--tu-navy-600)' }}>{B.title} · {B.action}</span>
         <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tu-grey-600)', textWrap: 'pretty' } as CSSProperties}>{B.description}</span>
       </div>
-      <div style={{ padding: 16, display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(210px,1fr))', gap: 12 }}>
+      <div style={{ padding: 16, display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(210px,100%),1fr))', gap: 12 }}>
         {people.map((x, j) => (
           <H
             key={x.index}
@@ -143,13 +146,76 @@ function QuadrantPeople({ on, sel }: { on: boolean; sel: string }) {
   );
 }
 
+function SuccessorChip({ n, role }: { n: string; role: string }) {
+  const x = EMP_BY_NAME[n];
+  const f = fitOf(x.scores, PROFILES[role]);
+  return (
+    <H
+      as="button"
+      onClick={() => actions.openEmpPop(x.index)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px 4px 4px', borderRadius: 999, border: '1px solid var(--tu-grey-300)', background: '#fff',
+        fontFamily: 'inherit', cursor: 'pointer', transition: 'border-color 140ms,background 140ms', minHeight: 40, maxWidth: '100%', boxSizing: 'border-box',
+      }}
+      hover={{ borderColor: 'var(--tu-navy-600)', background: 'var(--tu-navy-50)' }}
+    >
+      <Avatar ini={x.ini} size={30} fontSize={11} />
+      <span style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 8, minWidth: 0, textAlign: 'left' }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--tu-navy-600)' }}>{x.name}</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: readyColor(f), whiteSpace: 'nowrap' }}>{readyLabel(f)} · {f}%</span>
+      </span>
+    </H>
+  );
+}
+
+/** Móvil: cada posición clave como tarjeta apilada. */
+function SuccessionCards({ on }: { on: boolean }) {
+  return (
+    <div>
+      {SUCCESSION.map((r, i) => {
+        const inc = r.incumbent ? EMP_BY_NAME[r.incumbent] : null;
+        return (
+          <div
+            key={r.position}
+            style={{ padding: 16, borderBottom: '1px solid var(--tu-grey-100)', display: 'flex', flexDirection: 'column', gap: 10, transition: revealT(), ...rv(on, i, 50, 320) }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--tu-navy-600)' }}>{r.position}</span>
+                <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>{r.area}</span>
+              </div>
+              <span style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ ...caps, fontSize: 11 }}>Riesgo</span>
+                <Badge tone={RISK_TONE[r.risk]} size="sm">{r.risk}</Badge>
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span style={caps}>Titular</span>
+              <span style={{ fontSize: 14, color: 'var(--tu-grey-700)' }}>{inc ? inc.name : 'Sin titular'}</span>
+              <Badge tone={inc ? MOVE_TONE[inc.move] : 'info'} size="sm">{inc ? inc.move : 'Puesto nuevo'}</Badge>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span style={caps}>Sucesores</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {r.successors.map((n) => <SuccessorChip key={n} n={n} role={r.role} />)}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function SuccessionTable({ on }: { on: boolean }) {
+  const mobile = useMobile();
   return (
     <div style={{ ...card(16), overflow: 'hidden', transition: revealT(), ...rv(on, 0, 0, 300) }}>
       <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--tu-grey-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
         <span style={cardTitle}>Plan de sucesión · posiciones clave</span>
         <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>Preparación calculada contra el perfil del puesto destino</span>
       </div>
+      {mobile ? <SuccessionCards on={on} /> : (
       <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
         <div style={{ minWidth: 900 }}>
           <div style={tableHead(SUCC_COLS)}>
@@ -201,6 +267,7 @@ function SuccessionTable({ on }: { on: boolean }) {
           })}
         </div>
       </div>
+      )}
     </div>
   );
 }

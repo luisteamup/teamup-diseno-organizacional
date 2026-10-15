@@ -1,7 +1,8 @@
-import { useRef, useState, type MouseEvent } from 'react';
+import { useRef, useState, type MouseEvent, type PointerEvent } from 'react';
 import { Badge, type Tone } from '../../ds/Badge';
 import { OUT, STD, revealT, rv } from '../../lib/anim';
 import { fmt } from '../../lib/format';
+import { useMobile } from '../../lib/useMobile';
 import {
   CX, CY, DEMAND_COLOR, DEMAND_LABEL, DEMAND_TONE, P, R0, RE, RF, TAX_FAMS, TAX_LINES, angleDiff, pt,
 } from '../../lib/taxonomy';
@@ -43,15 +44,23 @@ function hitTest(e: MouseEvent<SVGSVGElement>): { line: number | null; fam: numb
 
 export function Taxonomia() {
   const s = useApp();
+  const mobile = useMobile();
   const on = s.entered;
   const [hov, setHov] = useState<{ line: number | null; fam: number | null }>({ line: null, fam: null });
   const lastTip = useRef<Tip>(EMPTY_TIP);
 
-  const onMove = (e: MouseEvent<SVGSVGElement>) => {
+  // Eventos de puntero: con mouse se comportan como hover (move/leave); con el dedo,
+  // tocar selecciona la habilidad o familia y tocar el espacio vacío la limpia.
+  const apply = (e: PointerEvent<SVGSVGElement>) => {
     const h = hitTest(e);
     if (h.line !== hov.line || h.fam !== hov.fam) setHov(h);
   };
-  const onLeave = () => { if (hov.line !== null || hov.fam !== null) setHov({ line: null, fam: null }); };
+  const onMove = (e: PointerEvent<SVGSVGElement>) => { if (e.pointerType === 'mouse') apply(e); };
+  const onDown = (e: PointerEvent<SVGSVGElement>) => apply(e);
+  const onLeave = (e: PointerEvent<SVGSVGElement>) => {
+    if (e.pointerType !== 'mouse') return;
+    if (hov.line !== null || hov.fam !== null) setHov({ line: null, fam: null });
+  };
 
   // La ficha conserva su último contenido mientras se desvanece.
   let tip: Tip | null = null;
@@ -70,34 +79,52 @@ export function Taxonomia() {
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, transition: revealT(420), ...rv(on) }}>
         <h2 style={h2}>Mapa de habilidades · Personal operativo</h2>
-        <p style={lead(760)}>{TAX_LINES.length} competencias en 12 familias de retail y operación. Pasa el cursor sobre una habilidad del abanico para ver su detalle.</p>
+        <p style={lead(760)}>{TAX_LINES.length} competencias en 12 familias de retail y operación. {mobile ? 'Toca una habilidad del abanico para ver su detalle.' : 'Pasa el cursor sobre una habilidad del abanico para ver su detalle.'}</p>
       </div>
       <div style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', ...card(16), transition: revealT(420), ...rv(on, 0, 0, 120) }}>
-        <div style={{ flex: '0 0 204px', padding: 20, display: 'flex', flexDirection: 'column', gap: 22, boxSizing: 'border-box' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <span style={caps}>Demanda</span>
+        {mobile ? (
+          <div style={{ flex: '1 1 100%', padding: '14px 16px 0', display: 'flex', flexWrap: 'wrap', gap: '8px 14px', fontSize: 13, color: 'var(--tu-grey-700)' }}>
             {(['alta', 'media', 'baja'] as const).map((d) => (
-              <span key={d} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--tu-grey-700)' }}>
-                <span style={{ width: 14, height: 14, borderRadius: 3, background: DEMAND_COLOR[d] }} />
+              <span key={d} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 12, height: 12, borderRadius: 3, background: DEMAND_COLOR[d] }} />
                 {DEMAND_LABEL[d]}
               </span>
             ))}
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 10, height: 10, borderRadius: 999, background: 'var(--tu-navy-600)' }} />Hard skills</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 10, height: 10, borderRadius: 999, background: 'var(--tu-cyan-600)' }} />Soft skills</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <span style={caps}>Tipo de familia</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--tu-grey-700)' }}><span style={{ width: 12, height: 12, borderRadius: 999, background: 'var(--tu-navy-600)' }} />Hard skills</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--tu-grey-700)' }}><span style={{ width: 12, height: 12, borderRadius: 999, background: 'var(--tu-cyan-600)' }} />Soft skills</span>
+        ) : (
+          <div style={{ flex: '0 0 204px', padding: 20, display: 'flex', flexDirection: 'column', gap: 22, boxSizing: 'border-box' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <span style={caps}>Demanda</span>
+              {(['alta', 'media', 'baja'] as const).map((d) => (
+                <span key={d} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--tu-grey-700)' }}>
+                  <span style={{ width: 14, height: 14, borderRadius: 3, background: DEMAND_COLOR[d] }} />
+                  {DEMAND_LABEL[d]}
+                </span>
+              ))}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <span style={caps}>Tipo de familia</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--tu-grey-700)' }}><span style={{ width: 12, height: 12, borderRadius: 999, background: 'var(--tu-navy-600)' }} />Hard skills</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--tu-grey-700)' }}><span style={{ width: 12, height: 12, borderRadius: 999, background: 'var(--tu-cyan-600)' }} />Soft skills</span>
+            </div>
           </div>
-        </div>
-        <div style={{ flex: '1 1 520px', minWidth: 0, padding: '12px 16px 20px', display: 'flex', justifyContent: 'center', boxSizing: 'border-box' }}>
+        )}
+        <div style={{ flex: '1 1 520px', minWidth: 0, padding: mobile ? '4px 2px 8px' : '12px 16px 20px', display: 'flex', justifyContent: 'center', boxSizing: 'border-box' }}>
           <div style={{ width: '100%', maxWidth: 780, aspectRatio: '1000/900' }}>
-            <TaxonomySvg on={on} line={hov.line} fam={hov.fam} onMove={onMove} onLeave={onLeave} />
+            <TaxonomySvg on={on} line={hov.line} fam={hov.fam} onMove={onMove} onDown={onDown} onLeave={onLeave} big={mobile} />
           </div>
         </div>
         <div
           aria-live="polite"
-          style={{ position: 'absolute', top: 20, right: 20, width: 280, maxWidth: 'calc(100% - 40px)', boxSizing: 'border-box', background: '#fff', border: '1px solid var(--tu-grey-200)', borderRadius: 16, boxShadow: 'var(--shadow-lg)', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none', opacity: tip ? 1 : 0, transform: tip ? 'none' : 'translateY(8px)', transition: `opacity 180ms ${OUT},transform 180ms ${OUT}` }}
+          style={mobile
+            ? { flex: '1 1 100%', margin: '0 12px 12px', boxSizing: 'border-box', background: tip ? '#fff' : 'var(--tu-grey-50)', border: '1px solid var(--tu-grey-200)', borderRadius: 12, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12, transition: `background 180ms ${OUT}` }
+            : { position: 'absolute', top: 20, right: 20, width: 280, maxWidth: 'calc(100% - 40px)', boxSizing: 'border-box', background: '#fff', border: '1px solid var(--tu-grey-200)', borderRadius: 16, boxShadow: 'var(--shadow-lg)', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12, pointerEvents: 'none', opacity: tip ? 1 : 0, transform: tip ? 'none' : 'translateY(8px)', transition: `opacity 180ms ${OUT},transform 180ms ${OUT}` }}
         >
+          {mobile && !tip ? (
+            <span style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--tu-grey-500)' }}>Toca una habilidad o familia del abanico para ver su detalle.</span>
+          ) : (<>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
             <span style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.25, letterSpacing: '-.015em', color: 'var(--tu-navy-600)' }}>{t.name}</span>
             <span style={{ display: 'flex', flex: '0 0 auto' }}><Badge tone={t.tone} size="sm">{t.dem}</Badge></span>
@@ -113,6 +140,7 @@ export function Taxonomia() {
               <span style={{ fontSize: 12, color: 'var(--tu-grey-500)' }}>{t.bL}</span>
             </div>
           </div>
+          </>)}
         </div>
       </div>
     </>
@@ -123,16 +151,22 @@ interface SvgProps {
   on: boolean;
   line: number | null;
   fam: number | null;
-  onMove: (e: MouseEvent<SVGSVGElement>) => void;
-  onLeave: () => void;
+  onMove: (e: PointerEvent<SVGSVGElement>) => void;
+  onDown: (e: PointerEvent<SVGSVGElement>) => void;
+  onLeave: (e: PointerEvent<SVGSVGElement>) => void;
+  /** Textos más grandes para pantallas de teléfono (el SVG se reduce a ~390px). */
+  big?: boolean;
 }
 
+const FS_MOBILE = 1.5;
+
 /** Mapa radial: centro "Retail", 12 rayos de familia y abanicos de habilidades que se dibujan al entrar. */
-function TaxonomySvg({ on, line, fam, onMove, onLeave }: SvgProps) {
+function TaxonomySvg({ on, line, fam, onMove, onDown, onLeave, big }: SvgProps) {
   const any = line !== null || fam !== null;
   const font = 'Outfit, sans-serif';
+  const k = big ? FS_MOBILE : 1;
   return (
-    <svg viewBox="0 0 1000 900" onMouseMove={onMove} onMouseLeave={onLeave} role="img" aria-label="Mapa radial de habilidades" style={{ display: 'block', width: '100%', height: '100%', overflow: 'visible', cursor: 'crosshair' }}>
+    <svg viewBox="0 0 1000 900" onPointerMove={onMove} onPointerDown={onDown} onPointerLeave={onLeave} role="img" aria-label="Mapa radial de habilidades" style={{ display: 'block', width: '100%', height: '100%', overflow: 'visible', cursor: 'crosshair' }}>
       {TAX_LINES.map((l, i) => (
         <path
           key={'l' + i}
@@ -157,7 +191,7 @@ function TaxonomySvg({ on, line, fam, onMove, onLeave }: SvgProps) {
             <text
               x={0} y={0} dy={-8} textAnchor="middle"
               transform={'translate(' + P(m).replace(' ', ',') + ') rotate(' + rot.toFixed(1) + ')'}
-              style={{ fontFamily: font, fontSize: lbl.length > 14 ? 12 : 13, fontWeight: 700, letterSpacing: lbl.length > 14 ? '.03em' : '.06em', fill: F.color, opacity: on ? (dim ? 0.35 : 1) : 0, transition: `opacity 400ms ${STD} ${on && !any ? 300 + i * 45 : 0}ms` }}
+              style={{ fontFamily: font, fontSize: (lbl.length > 14 ? 12 : 13) * (big && lbl.length > 12 ? 1.35 : k), fontWeight: 700, letterSpacing: lbl.length > 14 ? '.03em' : '.06em', fill: F.color, opacity: on ? (dim ? 0.35 : 1) : 0, transition: `opacity 400ms ${STD} ${on && !any ? 300 + i * 45 : 0}ms` }}
             >
               {lbl.toUpperCase()}
             </text>
@@ -165,8 +199,8 @@ function TaxonomySvg({ on, line, fam, onMove, onLeave }: SvgProps) {
         );
       })}
       <circle cx={CX} cy={CY} r={R0} style={{ fill: 'var(--tu-navy-600)', transform: on ? 'scale(1)' : 'scale(.6)', opacity: on ? 1 : 0, transformOrigin: CX + 'px ' + CY + 'px', transition: `transform 520ms ${OUT}, opacity 320ms` }} />
-      <text x={CX} y={CY + 2} textAnchor="middle" style={{ fontFamily: font, fontSize: 24, fontWeight: 700, fill: '#fff', letterSpacing: '-.02em', opacity: on ? 1 : 0, transition: 'opacity 400ms 200ms' }}>Retail</text>
-      <text x={CX} y={CY + 24} textAnchor="middle" style={{ fontFamily: font, fontSize: 11, fontWeight: 600, fill: 'var(--tu-navy-100)', letterSpacing: '.1em', opacity: on ? 1 : 0, transition: 'opacity 400ms 260ms' }}>{TAX_LINES.length + ' SKILLS'}</text>
+      <text x={CX} y={CY + 2} textAnchor="middle" style={{ fontFamily: font, fontSize: 24 * (big ? 1.25 : 1), fontWeight: 700, fill: '#fff', letterSpacing: '-.02em', opacity: on ? 1 : 0, transition: 'opacity 400ms 200ms' }}>Retail</text>
+      <text x={CX} y={CY + 24} textAnchor="middle" style={{ fontFamily: font, fontSize: 11 * (big ? 1.4 : 1), fontWeight: 600, fill: 'var(--tu-navy-100)', letterSpacing: '.1em', opacity: on ? 1 : 0, transition: 'opacity 400ms 260ms' }}>{TAX_LINES.length + ' SKILLS'}</text>
     </svg>
   );
 }
